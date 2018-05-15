@@ -1,0 +1,327 @@
+- content_for :head do
+  = stylesheet_link_tag 'groupon/groups/show', media: 'all'
+- coupon = @group.coupon
+- waiting = @group.minimum.to_i - @group.current.to_i
+- if !coupon.is_redpack?
+  div.group-show-header
+    div.group-show-header-face class="group-show-header-face-#{ @group.status.to_s }"
+    div.group-show-header-status class="group-status-#{ @group.status.to_s }"
+      = I18n.t("groupon.group_status.#{ @group.status.to_s }")
+-else
+  = image_tag "redpack_group.jpg", width:"100%", id: "share_link_image_redpack", class: "hidden"
+  = image_tag "redpack.jpg", width:"100%"
+.media.group-show-detail
+  .media-left
+    = image_tag "#{ image_domain }#{ coupon.product.try :major_pic }.m300.jpg", width: 64, height: 64, id: "share_link_image"
+  - if !coupon.is_redpack?
+    .media-body
+      p.media-heading#share_link_name = coupon.name.try(:truncate, 40)
+      .small.text-muted 
+        span = "#{ @group.minimum }人团："
+        span.text-red ¥
+        span.text-red.text-lg = @group.discount
+        span.text-red 
+          | /件
+        | &nbsp;
+        div.group-show-original-price
+          = "原价：￥#{ coupon.price }"
+  - else
+    .media-body
+      p.media-heading#share_link_name = coupon.name.try(:truncate, 40)
+      .small.text-muted 
+        span = "凑齐#{ @group.minimum }人，即可开启财运红包，红包金额 1.8 ~ 88 元不等"
+  div.group-stamp class="group-stamp-#{ @group.status.to_s }"
+div.group-show-product-description
+  | 产品详情
+div.group-user-photos
+  div
+    img width='48px' height='48px' src="#{ @owner.account.try(:connection_uxuan).try(:pic) }"
+  - @group_trades.each do |group_trade|
+    div
+      = image_tag "#{ group_trade.user.try(:account).try(:connection_uxuan).try(:pic) }"
+  - if waiting > 0
+    - waiting.times.each do |i|
+      div.group-user-waiting
+- if @is_valid
+  div.group-limited
+    div.group-limited-description
+      p.small 
+        | 还差&nbsp;
+        b.text-red#share_link_info = waiting
+        | &nbsp;人，
+        = dynamic_text
+      div.group-limited-countdown
+        p
+          span.expired-text 剩余
+          span.expired-day.small
+          span.expired-seperator.small
+            | :
+          span.expired-hour.small
+          span.expired-seperator.small
+            | :
+          span.expired-minute.small
+          span.expired-seperator.small
+            | :
+          span.expired-second.small
+          span.expired-text 结束
+- else
+  br
+div.group-owner.container
+  div
+  div.group-owner-pic
+    img width='30px' height='30px' src="#{ @owner.account.try(:connection_uxuan).try(:pic) }"
+  - if coupon.is_redpack? && @group.success?
+    div.group-created-message style="height: 30px;"
+      span.owner-name style="bottom: 0px;" = "团长 #{ @owner.name }"
+      br
+      span.owner-name style="bottom: 1px;" = "#{ formatted_time @group.created_at } 开团"
+      span.owner-created-at.pull-right style="font-size: 21px;bottom: 16px;color: #fff;" = "#{(@group.group_trades.find_by(user_id: @group.user_id).trade.wechat_redpack.try(:amount) || 0) / 100.00} 元"
+  - else
+    div.group-created-message
+      span.owner-name = "团长 #{ @owner.name }"
+      span.owner-created-at.pull-right = "#{ formatted_datetime @group.created_at } 开团"
+div.group-user-list
+  - @group_trades.each do |group_trade|
+    div.group-user-item.container
+      div
+        img width='30px' height='30px' src="#{ group_trade.user.try(:account).try(:connection_uxuan).try(:pic) }"
+      - if coupon.is_redpack? && @group.success?
+        div.group-created-message style="height: 30px;"
+          span.joiner-name style="bottom: 0px;" = (group_trade.user.try(:name) || '*')
+          br
+          span.joiner-name style="bottom: 1px;" = "#{ formatted_time group_trade.created_at }"
+          span.joiner-created-at.pull-right style="font-size: 21px;bottom: 16px;" = "#{(group_trade.trade.wechat_redpack.try(:amount) || 0) / 100.00} 元"
+      - else
+        div.group-created-message
+          span.joiner-name = group_trade.user.try :name
+          span.joiner-created-at.pull-right = "#{ formatted_datetime group_trade.created_at } 参团"
+= render '/shared/group_rule', three: @is_valid ? true : false, four: @group.success? ? true : false
+- if coupon.is_redpack?
+  = image_tag "redpack_rule.png", width:"100%"
+= render '/shared/qr_code'
+div.mod-footer
+  div.mod-footer-lk
+    a.on href="/g/coupons" id="shop-name" 全球U选
+    a href='/g/groups' 我的团
+  div.mod-footer-logo
+    span = "http://#{ CONFIG['domain']['ihaveu'] }"
+div.shared-indicate
+  = image_tag 'share_it.png', class: 'arrow'
+div.clear-group-show-bottom-fix
+div.group-show-bottom
+  a.group-show-back-to-home href="/g/coupons"
+    span.glyphicon.glyphicon-home
+  - if !@is_owner && @is_valid && !@has_joined
+    - if !coupon.is_redpack?
+      a.group-show-bottom-description href="#{ new_auction_trade_path(coupon_id: @group.coupon_id, trade: { group_id: @group.id, coupon_id: @group.coupon_id },location_id: coupon.product.location_id.to_i) }"
+        span
+          | 我要参团
+    - else
+      a.group-show-bottom-description.is_redpack href="javascript: void(0);"
+        span
+          | 点我，开启新年财运
+      a.group-show-bottom-description.redpack.hidden href="javascript: void(0);" style="opacity: 0.7;"
+        span
+          | 提交中...
+
+  - elsif (@is_owner || @has_joined) && @is_valid
+    a.group-show-bottom-description.share-group href="javascript: void(0);"
+      span = "还差#{ waiting }人红包到手"
+  - else
+    a.group-show-bottom-description href="/g/coupons"
+      span
+        | 我也要开团，继续领红包
+= render '/shared/group'
+div.group-show-product-description-backdrop
+  div.group-product-detail-container
+    div.product-description.group-product-detail
+      = (Redcarpet::Markdown.new(Redcarpet::Render::HTML).render(coupon.product.description2).html_safe rescue '')
+    a.close-product-description href="javascript: void(0);"
+      | 关闭
+div.group-show-redpack
+  div.group-product-detail-container style="height: 65%;"
+    div.product-description.group-product-detail style="height: 100%;"
+      = image_tag "redpack_code.png", width: "100%"
+    a.close-redpack-description href="javascript: void(0);" style="position: fixed; bottom: 0px; background-color: #999;"
+      | 关闭
+- if @is_valid
+  javascript:
+    (function(){
+      try{
+        var start_time = new Date("#{ formatted_datetime @group.expired_at }".replace(/-/g, "/")),
+                   now = new Date("#{ formatted_datetime Time.now }".replace(/-/g, "/")),
+                during = (start_time - now) / (24 * 60 * 60 * 1000),
+           expired_day = $(".expired-day"),
+          expired_hour = $(".expired-hour"),
+        expired_minute = $(".expired-minute"),
+        expired_second = $(".expired-second"),
+                         day, day_s, hour, hour_s, minute, minute_s, second, second_s;
+          if(during <= 0){
+            day = day_s = hour = hour_s = minute = minute_s = second = second_s = "00";
+          }else{
+            day = day_s = Math.floor(during);
+            if (day < 10) day_s = "0" + day.toString();
+            var time = during.toString();
+            var hour_tmp = parseFloat("0." + time.toString().split(".")[1]) * 24;
+            hour = hour_s = Math.floor(hour_tmp);
+            if (hour < 10) hour_s = "0" + hour.toString();
+            var minute_tmp = parseFloat("0." + hour_tmp.toString().split(".")[1]) * 60;
+            minute = minute_s = Math.floor(minute_tmp);
+            if (minute < 10) minute_s = "0" + minute.toString();
+            var second_tmp = parseFloat("0." + minute_tmp.toString().split(".")[1]) * 60;
+            second = second_s = Math.floor(second_tmp);
+            if (second < 10) second_s = "0" + second.toString();
+          };
+          expired_day.text(day_s);
+          expired_hour.text(hour_s);
+          expired_minute.text(minute_s);
+          expired_second.text(second_s);
+          if(during > 0){
+            var timer = setInterval(function(){
+                if(--second == -1){
+                  if(--minute == -1){
+                    if(--hour == -1){
+                      if(--day == -1){
+                        clearInterval(timer);
+                      }else{
+                        second = 59;
+                        minute = 59;
+                        hour = 23;
+                        expired_second.text(second);
+                        expired_minute.text(minute);
+                        expired_hour.text(hour);
+                        expired_day.text(day < 10 ? "0" + day.toString() : day);
+                      };
+                    }else{
+                      second = 59;
+                      minute = 59;
+                      expired_second.text(second);
+                      expired_minute.text(minute);
+                      expired_hour.text(hour < 10 ? "0" + hour.toString() : hour);
+                    };
+                  }else{
+                    second = 59;
+                    expired_second.text(second);
+                    expired_minute.text(minute < 10 ? "0" + minute.toString() : minute);
+                  };
+                }else{
+                  expired_second.text(second < 10 ? "0" + second.toString() : second);
+                };
+              }, 1000);
+          };
+      }catch(e){};
+    })();
+javascript:
+  var bindOneClick = function(){
+    $('.is_redpack').on('click',function(){
+      $('.is_redpack').addClass('hidden')
+      $('.redpack').removeClass('hidden')
+      var data = {
+        "coupon_id": "#{ coupon.id }",
+        "group_id": "#{@group.id}"
+      };
+      $.ajax({
+        url: "/auction/trades/red_packet.json",
+        dataType: 'JSON',
+        data: data,
+        type: 'POST',
+        success: function(result){
+          if(!result){
+            uxuan.alert("出错了");
+            bindOneClick();
+            $('.is_redpack').removeClass('hidden')
+            $('.redpack').addClass('hidden')
+            return;
+          };
+          if(result.trade){
+            // window.location.href = '/g/groups/' + result.trade.group_id.toString();
+            $(".main-content").css({
+              overflow: "hidden",
+              height: $(window).height()
+            });
+            $(".group-show-redpack").addClass("group-show-product-description-backdrop-show");
+          }else if(result.error){
+            uxuan.alert(result.error);
+            bindOneClick();
+            $('.is_redpack').removeClass('hidden')
+            $('.redpack').addClass('hidden')
+          }else{
+            uxuan.alert("对不起，出错了");
+            bindOneClick();
+            $('.is_redpack').removeClass('hidden')
+            $('.redpack').addClass('hidden')
+          };
+        },
+        error: function(msg){
+          uxuan.alert("对不起，请求红包接口失败");
+          console.log(msg);
+          bindOneClick();
+          $('.is_redpack').removeClass('hidden')
+          $('.redpack').addClass('hidden')
+        }
+      });
+    });
+  };
+  bindOneClick();
+
+  $(".group-user-photos img").on('error', function(){
+    var parent_div = $(this).closest("div");
+    parent_div.empty();
+    parent_div.addClass("group-user-missing");
+  });
+  $(".group-owner-pic img, .group-user-item img").on("error", function(){
+    var parent_div = $(this).closest("div");
+    parent_div.empty();
+    parent_div.addClass("group-user-pic-missing");
+  });
+  $(function(){
+    $(".share-group").on("click", function(){
+      $(".shared-indicate").fadeIn();
+      $(".main-content").css({
+        overflow: "hidden",
+        height: $(window).height()
+      });
+    });
+    $(document).on("touchstart", ".shared-indicate", function(e){
+      $(".main-content").css({
+        overflow: "auto",
+        height: "auto"
+      });
+      $(this).fadeOut();
+      e.preventDefault();
+      return false;
+    });
+    
+    $(".group-show-product-description, .group-show-detail").on("click", function(e){
+      $(".main-content").css({
+        overflow: "hidden",
+        height: $(window).height()
+      });
+      $(".group-show-product-description-backdrop").addClass("group-show-product-description-backdrop-show");
+      e.preventDefault();
+      return false;
+    });
+    $(".group-show-product-description-backdrop").on("click", function(e){
+      if (e.target != $(".group-show-product-description-backdrop")[0]) return false;
+      $(".group-show-product-description-backdrop").removeClass("group-show-product-description-backdrop-show");
+      $(".main-content").css({
+        overflow: "auto",
+        height: "auto"
+      });
+      e.preventDefault();
+      return false;
+    });
+    $(".close-product-description").on("click", function(e){
+      $(".group-show-product-description-backdrop").removeClass("group-show-product-description-backdrop-show");
+      $(".main-content").css({
+        overflow: "auto",
+        height: "auto"
+      });
+      e.preventDefault();
+      return false;
+    });
+
+    $(".close-redpack-description").on('click',function(){
+      window.location.reload()
+    })
+  });

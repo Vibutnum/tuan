@@ -1,0 +1,31 @@
+- group_trades.each do |gt|
+  - group = gt.group
+  - coupon = group.try(:coupon)
+  div.my-group.container
+    div.group-detail
+      a href="#{ groupon_group_path group }"
+        div.group-index-title-img.pull-left
+          = image_tag "#{ image_domain }#{ coupon.try(:product).try :major_pic }.m130.jpg", width: 60, height: 60
+        div.my-group-data
+          p.my-group-coupon-name = "#{ coupon.try(:name) }"
+          div.my-group-core
+            - if !coupon.is_redpack?
+              div.my-group-price
+                span.small = "成团价："
+                b = "￥#{ number_with_delimiter coupon.try(:discount) }"
+                font
+                  | /件
+            - else
+              div.my-group-price
+                span.small = "团购红包免费送"
+            div.my-group-btn
+    div.group-info
+      - if group.status == "failure" && coupon.is_redpack?
+        span.small class="group-status-failure" = "团购失败"
+      - else
+        span.small class="group-status-#{ gt.status }" = "#{ I18n.t('groupon.group_status.' + gt.status) }"
+      - if !coupon.is_redpack?
+        a.btn.btn-default.btn-sm.pull-right.text-muted href="#{ auction_trade_path gt.trade_id }"
+          | 查看订单
+      a.btn.btn-default.btn-sm.pull-right.list-detail href="#{ groupon_group_path group }"
+        | 查看团详情

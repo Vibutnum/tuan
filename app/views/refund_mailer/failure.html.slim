@@ -1,0 +1,21 @@
+h3 style="margin-top: 0 !important; margin-bottom: 0 !important;" = "您好，"
+h3 style="margin-top: 0 !important; margin-bottom: 0 !important;"
+  | &nbsp;&nbsp;&nbsp;&nbsp;
+  | 「全球U选」现有一个微信团购订单，自动退款失败，请进行
+  a href="#{ @url }"
+    | 手动退款
+  | ！
+br
+br
+h3 style="margin-top: 0 !important; margin-bottom: 0 !important;"
+  | 订单编号：
+  font style="font-size: 14px !important; font-weight: normal !important;"
+    = "#{ @trade.id }"
+h3 style="margin-top: 0 !important; margin-bottom: 0 !important;"
+  | 订单金额：
+  font style="font-size: 14px !important; font-weight: normal !important;"
+    = "#{ @trade.price } ￥"
+h3 style="margin-top: 0 !important; margin-bottom: 0 !important;"
+  | 自动退款时间：
+  font style="font-size: 14px !important; font-weight: normal !important;"
+    = "#{ Time.now.strftime '%Y-%m-%d %H:%M:%S' }"

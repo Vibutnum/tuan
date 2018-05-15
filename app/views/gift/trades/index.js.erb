@@ -1,0 +1,2 @@
+$(".list-unstyled.trade-list").append("<%= escape_javascript render('indexer', trades: @trades, from: (params[:q] && params[:q][:is_gift_eq] == '0') ? 'total' : ((params[:q] && params[:q][:is_gift_eq] == '1' && params[:q][:gift_from_null] == '1') ? 'send' : ((params[:q] && params[:q][:is_gift_eq] == '1' && params[:q][:gift_from_not_null] == '1') ? 'receive' : ''))) %>");
+

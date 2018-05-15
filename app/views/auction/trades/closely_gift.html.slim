@@ -1,0 +1,176 @@
+- content_for :head do
+  = stylesheet_link_tag 'auction/trades/closely_gift', media: 'all'
+- taxation = params[:count].to_i * @product.discount * @product.tax_rate.to_f
+- is_foreign = @product.try(:location_id).to_i > 1
+- inland_total = (params[:count].to_i * @product.discount.to_f).round
+- final_total = is_foreign ? (taxation.round <= 50 ? inland_total : taxation.round + inland_total) : inland_total
+#trade-new
+  - if @contact.present?
+    .row.address
+      .col-xs-3.address-left
+        p 送至
+      .col-xs-9
+        a href="/gift/contacts?#{ @query_str }"
+          .media
+            .media-body
+              h4.media-heading 
+                = @contact.name
+                span.small  = @contact.mobile
+              p
+                - if @contact.province.present?
+                  span.small = @contact.province.to_s + ' '
+                - if @contact.city.present?
+                  span.small = @contact.city.to_s + ' '
+                span.small = @contact.town
+              p 
+                span.small = @contact.address
+                - if @contact.postcode.present?
+                  span.small.text-muted 
+                    |（
+                    = @contact.postcode
+                    |）
+            .media-right
+              .address-right
+  - else
+    .no-address
+      a.text-center href="/gift/contacts/new?#{ @query_str }" 请选择收货地址
+  - if @product.try(:foreign_product?)
+    p style="padding: 5px 10px; font-size: 12px; color: #777; position: relative; top: -5px;color: #f64441;"
+      | * 当前商品为跨境商品，需要正确填写身份证信息以便商品顺利通过海关。
+  .order.container
+    .trade-list-item    
+      .media
+        .media-left
+          a href="#"
+            img.media-object src="#{image_domain}#{@product.try(:major_pic)}.m160.jpg" 
+        .media-body
+          p.media-heading 
+            = @product.name
+            .small.text-muted  = "数量：#{ params[:count] }"
+        .media-right
+          p.text-right.text-genter-blue
+            | ￥
+            = @product.discount
+    .trade-list-item-bottom.text-right
+      span.text-muted 税费：
+      span.text-muted = "￥#{ is_foreign ? (taxation.round <= 50 ? 0 : taxation.round) : 0 }，"
+      span.text-muted 运费：
+      span.text-muted ￥0
+      span.text-muted ，总价：
+      span.text-genter-blue.text-lg  = "￥#{ number_with_delimiter final_total }"
+
+  / div.gift-product-detail-container
+  /   div.gift-product-detail-label 商品详情
+  /   div.gift-product-detail
+  /     span.text-muted 单价：
+  /     span.text-genter-blue.price = "￥#{ @product.discount }"
+  /     br
+  /     span.text-muted 数量：
+  /     span.text-genter-blue.price = "x #{ params[:count] }"
+
+  / div.gift-pay-detail-container
+  /   span.text-genter-blue 需付款：
+  /   span.text-genter-blue = "￥#{ params[:count].to_i * @product.discount.to_f }"
+
+div.defray-container
+  - if @contact.present?
+    a#wechat-pay-now.pay-now href="javascript: void(0);"
+      | 微信支付 
+      = " ￥#{ number_with_delimiter final_total }"
+  - else
+    div.disabled-pay
+      | 微信支付
+      = " ￥#{ number_with_delimiter final_total }"
+
+javascript:
+  var ihaveu_domain = '#{ ihaveu_domain }';
+  var data = {
+    "trade": {
+      "contact": {
+        "id": "#{ @contact.try(:id) }"
+      },
+      "client": "gift"
+    },
+    "product_id": "#{ @product.id }",
+    "count": "#{ params[:count] }"
+  };
+  
+  var wechatPayBtn = $("#wechat-pay-now");
+  var waiting = $("<div class='waiting' style='height: 40px; font-size: 16px; padding-top: 8px; padding-left: 10px; padding-right: 10px;'>支付中...</div>");
+  
+  var bindPayEvent = function(){
+    $(".defray-container").empty().append(wechatPayBtn);
+    $(".waiting").remove();
+    $("#wechat-pay-now").one('click', toPay);
+  };
+  
+  var toPay = function(){
+    $(".defray-container").empty().append(waiting);
+    $.ajax({
+      url: "/gift/trades/reward.json",
+      dataType: 'JSON',
+      data: data,
+      type: 'POST',
+      success: function(result){
+        if(!result){
+          uxuan.alert("出错了");
+          bindPayEvent();
+          return;
+        };
+        if(result.trade){
+          var trade = result.trade
+          // 提交订单成功，拉起支付
+          $.ajax({ 
+            url: ihaveu_domain + '/auction/trades/' + trade.id.toString() + '/checkout.json?trade[payment_service]=wechat_uxuan&trade[checkout_token]=' + trade.checkout_token,
+            dataType: 'JSON',
+            type: 'GET',
+            success: function(res){
+              if(res && res.appId){
+                  // 调起支付
+                  WeixinJSBridge.invoke('getBrandWCPayRequest', {
+                    'appId': res['appId'],
+                    'timeStamp': res['timeStamp'],
+                    'nonceStr': res['nonceStr'],
+                    'package': res['package'],
+                    'signType': res['signType'],
+                    'paySign': res['paySign']
+                  }, function(res){
+                    if(res.err_msg == "get_brand_wcpay_request:ok" ) {
+                      window.location.href = "/auction/trades/" + trade.id.toString() + "/wechat_query";
+                    }else{
+                      window.location.href = '/auction/trades/gift_show?trade_id=' + trade.id.toString();
+                    };
+                    //使用以上方式判断前端返回，微信团队郑重提示：res.err_msg将在用户支付成功后返回ok，
+                    //但并不保证它绝对可靠。
+                    //因此微信团队建议，当收到ok返回时，向商户后台询问是否收到交易成功的通知，若收到通知，
+                    //前端展示交易成功的界面；若此时未收到通知，商户后台主动
+                    //调用查询订单接口，查询订单的当前状态，并反馈给前端展示相应的界面。
+                  });
+              }else{
+                uxuan.alert('对不起，调起支付失败');
+                window.location.href = '/auction/trades/gift_show?trade_id=' + trade.id.toString();
+              };
+            },
+            error: function(err){
+              // window.location.href = ihaveu_domain + '/sessions.json'
+              uxuan.alert('您的网络质量有点差，请多试几次');
+              window.location.href = '/auction/trades/gift_show?trade_id=' + trade.id.toString();
+            }
+          });
+        } else if(result.error) {
+          uxuan.alert(result.error);
+          bindPayEvent();
+        }else{
+          uxuan.alert("对不起，订单提交失败");
+          bindPayEvent();
+        };
+      },
+      error: function(msg){
+        uxuan.alert("对不起，请求下单接口失败");
+        console.log(msg);
+        bindPayEvent();
+      }
+    });
+  };
+  
+  $("#wechat-pay-now").one('click', toPay);

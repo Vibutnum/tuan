@@ -1,0 +1,18 @@
+- content_for :head do
+  = stylesheet_link_tag 'ucenter', media: 'all'
+#trade-index
+  .nav-fixed
+    a class="#{params[:q] ? '' : 'active'}" href="/auction/trades" 全部
+    a class="#{params[:q] && params[:q][:status_eq] == 'pay' ? 'active' : ''}" href="/auction/trades?q[status_eq]=pay" 待付款
+    / 订单状态：audit、ship、recieve、complete、prepare
+    a class="#{params[:q] && params[:q][:status_eq] != 'pay' ? 'active' : ''}" href="/auction/trades?q[status_in][]=audit&q[status_in][]=ship&q[status_in][]=recieve&q[status_in][]=complete&q[status_in][]=prepare" 已付款
+  - if @trades.present?
+    ul.list-unstyled.trade-list
+      = render 'indexer', trades: @trades
+  - else
+    div.trade-missing
+= render '/shared/post_sale'
+javascript:
+  $(function(){
+    $(".list-unstyled.trade-list").scrollPaginate("#{ @trades.total_pages }");
+  });

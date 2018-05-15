@@ -1,0 +1,30 @@
+- content_for :head do
+  = stylesheet_link_tag 'gift/trades/get', media: 'all'
+div
+  img id="product_major_pic" src="#{ image_domain }#{ @product.try(:major_pic) }.m640.jpg" width="100%"
+div style="text-align: center; padding: 10px;"
+  p = "您的好友 #{ @trade.user.try(:name) } 赠送您"
+  h5.mar-top = "#{ @product.name } x #{ @trade.gift_per_count }"
+  a.gift-btn.mar-top href="/gift/trades/receiving_gifts?location_id=#{@product.location_id}&trade_id=#{ @trade.id }&#{ @query }" 
+    span.btn-color 立即领取
+  - unless @group
+    a.gift-btn.mar-top.gift-back-color href="javascript: void(0);" 转赠他人
+div.shared-indicate
+  = image_tag 'share_it.png', class: 'arrow'
+javascript:
+  $(".gift-back-color").on("click", function(){
+    $(".shared-indicate").fadeIn();
+    $(".main-content").css({
+      overflow: "hidden",
+      height: $(window).height()
+    });
+  });
+  $(document).on("touchstart", ".shared-indicate", function(e){
+    $(".main-content").css({
+      overflow: "auto",
+      height: "auto"
+    });
+    $(this).fadeOut();
+    e.preventDefault();
+    return false;
+  });

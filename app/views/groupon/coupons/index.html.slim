@@ -1,0 +1,71 @@
+- content_for :head do
+  = stylesheet_link_tag 'groupon/coupons/index', media: 'all'
+/ ul#slider
+/   - banners(DATA_CONFIG['file_id']).each do |banner|
+/     li
+/       a href="#{ banner['url'].strip.size > 0 ? banner['url'].strip : 'javascript: void(0);' }"
+/         img src="#{ banner['image'] }"
+div.coupon
+  - if (@redpackets.present? && !redpack_timeout? && !redpack_sold_out?) || @coupons.present? || @sold_out_items.present?
+    - if @redpackets.present? && !redpack_timeout? && !redpack_sold_out?
+      = render 'indexer', coupons: @redpackets
+    - if @coupons.present?
+      = render 'indexer', coupons: @coupons
+    - if @sold_out_items.present?
+      = render 'indexer', coupons: @sold_out_items
+  - else
+    div.coupon-missing
+= render '/shared/qr_code'
+javascript:
+  $("div.data-link[data-href]").on("click", function(e){
+    e.preventDefault();
+    if ($(e.target).hasClass('coupon-item-btn')) return false;
+    window.open($(this).data("href"), "_self");
+  });
+  $(".coupon-item-btn").on("click", function(e){
+    e.preventDefault();
+    window.open($(this).data("href"), "_self");
+  });
+  
+  function doTouchSlide(o) {
+    return $("#slider li").css({
+        width: o
+    }).find("img").css({
+        width: (parseInt(o.toString().replace(/px/g, '')) - 20).toString() + 'px'
+    }),
+    new TouchSlider("slider", {
+      duration: 800,
+      interval: 2e3,
+      direction: 0,
+      autoplay: !0,
+      align: "center",
+      mousewheel: !1,
+      mouse: !0,
+      fullsize: !1
+    });
+  };
+  $(function(){
+    // 轮播图
+    (function(){
+      if($("#slider li").length > 0){
+        var canOrientationChange = 'onorientationchange' in window;
+        var rotation = canOrientationChange ? 'orientationchange' : 'resize';
+        var slider = function(){
+          var o = canOrientationChange ? screen.width : $('body').width();
+          var n = doTouchSlide(o);
+          $("#slider").on("focus", "input", function() {
+            n.pause();
+          }
+          ).on("blur", "input", function() {
+            n.play();
+          }
+          ).on("click", "button", function() {}
+          );
+        };
+        slider();
+        $(window).on(rotation, function(){
+          slider();
+        });
+      };
+    })();
+  });

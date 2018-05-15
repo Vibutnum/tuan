@@ -1,0 +1,42 @@
+- content_for :head do
+  css:
+    .main-content {
+      overflow: auto;
+    }
+h3 = "#{ (DailyPaper.send :deadline).strftime("%Y年%m月%d日") } 全球U选运营日报"
+br
+- if @data.present?
+  p style="margin-bottom: 5px; margin-top: 10px;" * 以下订单是已支付订单按「下单时间」统计
+  table.table.table-bordered style="border: 1px solid #ddd; width: 100%; border-collapse: collapse; border-spacing: 0;"
+    thead
+      tr
+        th style="text-align: center; border-bottom-width: 2px; border: 1px solid #ddd; padding: 8px; line-height: 1.428; min-width: 95px;" 日期
+        th style="text-align: left; border-bottom-width: 2px; border: 1px solid #ddd; padding: 8px; line-height: 1.428; min-width: 135px;" 客户端
+        th style="text-align: right; border-bottom-width: 2px; border: 1px solid #ddd; padding: 8px; line-height: 1.428; min-width: 120px;" 交易人数（人）
+        th style="text-align: right; border-bottom-width: 2px; border: 1px solid #ddd; padding: 8px; line-height: 1.428; min-width: 120px;" 订单数（单）
+        th style="text-align: right; border-bottom-width: 2px; border: 1px solid #ddd; padding: 8px; line-height: 1.428; min-width: 120px;" 总金额（元）
+        th style="text-align: right; border-bottom-width: 2px; border: 1px solid #ddd; padding: 8px; line-height: 1.428; min-width: 120px;" 客单价（元）
+        th style="text-align: right; border-bottom-width: 2px; border: 1px solid #ddd; padding: 8px; line-height: 1.428; min-width: 120px;" 订单均价（元）
+    tbody
+      - totality = (@data.map{ |d| (JSON.parse(d) rescue nil) } rescue []).compact
+      - if totality.present?
+        - totality.try(:each_with_index) do |data, i|
+          - one = data.try(:[], 0)
+          - if one.present?
+            tr style="#{ 'background-color: #ABF1E4;' if i == 0 }"
+              td style="text-align: center; vertical-align: middle; border: 1px solid #ddd; padding: 8px; line-height: 1.428;" rowspan="#{ data.try(:size) }" = one.try(:[], "date")
+              td style="text-align: left; border: 1px solid #ddd; padding: 8px; line-height: 1.428;" = DailyPaper.send(:client_names).try(:[], one.try(:[], "client"))
+              td style="text-align: right; border: 1px solid #ddd; padding: 8px; line-height: 1.428;" = number_with_delimiter one.try(:[], "users")
+              td style="text-align: right; border: 1px solid #ddd; padding: 8px; line-height: 1.428;" = number_with_delimiter one.try(:[], "trades")
+              td style="text-align: right; border: 1px solid #ddd; padding: 8px; line-height: 1.428;" = number_with_delimiter one.try(:[], "totals")
+              td style="text-align: right; border: 1px solid #ddd; padding: 8px; line-height: 1.428;" = number_with_delimiter one.try(:[], "amounts")
+              td style="text-align: right; border: 1px solid #ddd; padding: 8px; line-height: 1.428;" = number_with_delimiter one.try(:[], "averages")
+          - data.try(:[], 1..(data.size - 1)).try(:each) do |result|
+            tr style="#{ 'background-color: #ABF1E4;' if i == 0 }"
+                td style="text-align: left; border: 1px solid #ddd; padding: 8px; line-height: 1.428;" = DailyPaper.send(:client_names).try(:[], result.try(:[], "client"))
+                td style="text-align: right; border: 1px solid #ddd; padding: 8px; line-height: 1.428;" = number_with_delimiter result.try(:[], 'users')
+                td style="text-align: right; border: 1px solid #ddd; padding: 8px; line-height: 1.428;" = number_with_delimiter result.try(:[], 'trades')
+                td style="text-align: right; border: 1px solid #ddd; padding: 8px; line-height: 1.428;" = number_with_delimiter result.try(:[], "totals")
+                td style="text-align: right; border: 1px solid #ddd; padding: 8px; line-height: 1.428;" = number_with_delimiter result.try(:[], 'amounts')
+                td style="text-align: right; border: 1px solid #ddd; padding: 8px; line-height: 1.428;" = number_with_delimiter result.try(:[], "averages")
+p style="margin-top: 20px;" 日报乃公司机密，不得擅自分享传播！如有疑问请联系 panfu@ihaveu.net

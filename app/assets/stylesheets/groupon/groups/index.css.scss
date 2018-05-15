@@ -1,0 +1,119 @@
+/*更换颜色*/
+$color_red: #f64441; 
+.my-groups {
+  background-color: #f8f8f8;
+}
+.my-group {
+  margin-top: 15px;
+  background-color: #fff;
+  width: 100% !important;
+  border-bottom: 1px solid rgb(236, 237, 237);
+}
+.group-info a { color: #777; font-size: 12px; }
+
+.group-detail {
+  height: 80px;
+  border-bottom: 1px solid #eceded;
+  padding-top: 10px;
+}
+.my-group-data {
+  width: 100%;
+  padding-left: 70px;
+}
+.group-info {
+  height: 45px;
+  line-height: 28px;
+  padding: 7px 0 7px 0;
+}
+.my-group-coupon-name {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  -o-text-overflow: ellipsis;
+  overflow: hidden;
+}
+.list-detail {
+  margin-right: 10px;
+}
+.my-group-core:before {
+  background-image: image-url('tuan_logo_small.png');
+  background-repeat: no-repeat;
+  background-size: 36px 36px;
+}
+.my-group-btn:after {
+  background-image: image-url('bg_mark.png');
+  background-repeat: no-repeat;
+  background-size: 365px 490px;
+}
+.my-group-core {
+  color: #FFF;
+  display: block;
+  height: 25px;
+  line-height: 25px;
+  position: relative;
+  width: 185px;
+  top: 10px;
+}
+.my-group-core:before {
+  background-position: 0 0;
+  content: " ";
+  height: 36px;
+  left: -5px;
+  position: absolute;
+  top: -5px;
+  width: 36px;
+}
+.my-group-price {
+  background-color: rgb(120, 108, 97);
+  float: left;
+  height: 25px;
+  margin-left: 10px;
+  overflow: hidden;
+  padding-left: 25px;
+  width: 148px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  -o-text-overflow: ellipsis;
+}
+.my-group-price span {
+  vertical-align: 1px;
+}
+.my-group-price b {
+  font-size: 16px;
+  font-weight: 400;
+  margin-left: -5px;
+}
+.my-group-price font {
+  font-size: 12px;
+}
+.my-group-btn {
+  background-color: $color_red;
+  /*background-color: rgb(78, 194, 187);*/
+  border-bottom-right-radius: 17px;
+  border-top-right-radius: 17px;
+  float: left;
+  height: 25px;
+  line-height: 25px;
+  padding-left: 10px;
+  padding-right: 15px;
+  position: relative;
+}
+.my-group-btn:after {
+  background-position: -218px -60px;
+  content: " ";
+  height: 15px;
+  position: absolute;
+  right: 7px;
+  top: 6px;
+  width: 15px;
+}
+.group-index-title-img {
+  height: 60px;
+  width: 60px;
+}
+.group-missing {
+  background: image-url('group_missing.jpg') no-repeat center center;
+  background-size: 200px 200px;
+  height: 200px;
+  width: 100%;
+  margin-top: 40%;
+}

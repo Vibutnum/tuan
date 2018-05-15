@@ -1,0 +1,101 @@
+= render "/layouts/common", from: "团购"
+- sign_package = ($client.get_jssign_package(request.url) rescue {})
+javascript:
+  (function(){
+    var pathname = location.pathname, coupon = "/g/coupons", group = "/g/groups", trade = "/auction/trades", ucenter = "/g/ucenter",
+        trade_ = /^\/auction\/trades/, ucenter_ = /^\/g\/ucenter|^\/auction\/contacts/;
+    if(coupon == pathname || "/" == pathname){
+      $("a.nav-controller[href='" + coupon + "']").addClass('active');
+      return;
+    };
+    
+    if(group == pathname){
+      $("a.nav-controller[href='" + group + "']").addClass('active');
+      return;
+    };
+    
+    if(trade_.test(pathname)){
+      $("a.nav-controller[href='" + trade + "']").addClass('active');
+      return;
+    };
+    
+    if(ucenter_.test(pathname)){
+      $("a.nav-controller[href='" + ucenter + "']").addClass('active');
+      return;
+    };
+  })();
+  
+  try{
+    wx.config({
+      debug:     false,
+      appId:     "#{ sign_package['appId'] }",
+      timestamp: "#{ sign_package['timestamp'] }",
+      nonceStr:  "#{ sign_package['nonceStr'] }",
+      signature: "#{ sign_package['signature'] }",
+      jsApiList: ['checkJsApi',
+        'onMenuShareTimeline',
+        'onMenuShareAppMessage',
+        'onMenuShareQQ',
+        'onMenuShareWeibo'
+      ]
+    });
+
+
+    var group_  = /g\/groups\/\d/,
+        coupon_ = /g\/coupons\/\d/;
+    // group#show 分享设置
+    if ( group_.test(location.pathname) ){
+      var redpack = "#{ @group.try(:coupon).try(:is_redpack?) || false }"
+      if(redpack == "true" ){
+        var title  = '财神敲门送红包';
+        var desc   = '全球U选新春赠礼，百万红包来就有，神秘大礼等你拿！';
+        var imgUrl = $('#share_link_image_redpack')[0].src;
+      }else{
+        var title  = '我参加了全球U选“' + $("#share_link_name").text() + '”拼单';
+        var desc   = $('#share_link_info').text() ? '【还差'+ $('#share_link_info').text() +'人】足不出户，U选全球，海外买手，折扣售卖！' : '足不出户，U选全球，海外买手，折扣售卖！';
+        var imgUrl = $('#share_link_image')[0].src;
+      }
+    // coupon#show 分享设置
+    }else if( coupon_.test(location.pathname) ){
+      var redpack = "#{@coupon.try(:is_redpack?) || false }"
+      if (redpack == "true"){
+        var title  = '财神敲门送红包';
+        var desc   = '全球U选新春赠礼，百万红包来就有，神秘大礼等你拿！';
+        var imgUrl = $('#share_link_image_redpack')[0].src;
+      }else{
+        var title  = $("#share_link_name").text();
+        var desc   = '足不出户，U选全球，海外买手，折扣售卖！';
+        var imgUrl = $('.share_link_image:first')[0].src;
+      }
+ 
+    // 通用设置   
+    }else{
+      var title  = '全球U选';
+      var desc   = '足不出户，U选全球，海外买手，折扣售卖！';
+      var imgUrl = "#{ request.base_url }" + "#{ asset_path('logo.jpg') }";
+    }
+
+    var share_config = {
+      "share": {
+        'title':  title, // 分享标题
+        'desc':   desc,  // 分享描述
+        'link':   '#{ request.original_url }', // 分享链接
+        'imgUrl': imgUrl, // 分享图标
+         success: function () { 
+            // 用户确认分享后执行的回调函数
+        },
+        cancel: function () { 
+            // 用户取消分享后执行的回调函数
+        }
+      }
+    } 
+
+    wx.ready(function () {
+      wx.onMenuShareAppMessage(share_config.share);//分享给好友
+      wx.onMenuShareTimeline(share_config.share);//分享到朋友圈
+      wx.onMenuShareQQ(share_config.share);//分享给手机QQ
+      wx.onMenuShareWeibo(share_config.share);//分享到微博
+    });
+  }catch(e){
+    console.log(e);
+  };

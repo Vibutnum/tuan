@@ -1,0 +1,32 @@
+- content_for :head do
+  = stylesheet_link_tag 'ucenter', media: 'all'
+#ucenter-index
+  .header
+    .image-box
+      img src="#{ @current_user.account.try(:connection_uxuan).try(:pic) }" alt=""
+      .img-title 
+        - if @current_user
+          = @current_user.name
+        - else
+          | 游客
+
+  ul.list-group
+    a href="/auction/trades"
+      li.list-group-item 我的订单
+
+      .container
+        .row.list-item-bd
+          a.col-xs-4 href="/auction/trades" 全部
+          a.col-xs-4 href="/auction/trades?q[status_eq]=pay" 待付款
+          / 订单状态：audit、ship、recieve、complete、prepare
+          a.col-xs-4 href="/auction/trades?q[status_in][]=audit&q[status_in][]=ship&q[status_in][]=recieve&q[status_in][]=complete&q[status_in][]=prepare" 待收货
+    a href="/g/groups" 
+      li.list-group-item.icon-groups style='border-bottom:none;' 我的拼团
+    a href="/auction/contacts"
+      li.list-group-item.icon-addresses style='border-bottom:none;' 我的地址
+    a href="/statics/post_sale.html"
+      li.list-group-item.icon-post-sale 售后服务
+javascript:
+  $("#ucenter-index .header .image-box img").on("error", function(){
+    $(this).replaceWith($("<div class='ucenter-hd-missing'></div>"));
+  });

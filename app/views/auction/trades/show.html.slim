@@ -1,0 +1,115 @@
+- content_for :head do
+  = stylesheet_link_tag 'ucenter', media: 'all'
+#trade-show
+  div.trade-step-container class="#{ @trade.status_step_class }"
+    div.trade-step-bd-line
+    div.trade-step-check
+      span.glyphicon.glyphicon-check style="color:#f64441;"
+      br
+      | 提交订单
+    div.trade-step-ship
+      span.glyphicon.glyphicon-plane style="color:#f64441;"
+      br
+      | 配送中
+    div.trade-step-inbox
+      span.glyphicon.glyphicon-inbox style="color:#f64441;"
+      br
+      | 签收成功
+  .container
+    table.table.table-bordered
+      tr
+        th width="70px" 订单状态
+        td class="#{ 'group-status-' + @trade.group_trade.try(:status).to_s if @trade.group_trade.present? && @trade.status == 'audit' }" = @trade.status_zh
+      tr
+        th 总额
+        td 
+          span ￥
+          span = number_with_delimiter @trade.payment_price
+      tr
+        th 送至
+        td = [@trade.unscoped_contact.try(:province), @trade.unscoped_contact.try(:city), @trade.unscoped_contact.try(:town), @trade.unscoped_contact.try(:address)].join(' ')
+      tr
+        th 收货人
+        td = @trade.unscoped_contact.try(:name)
+      tr
+        th 下单时间
+        td = formatted_datetime @trade.created_at
+      - if @trade.delivery_service.present? && @trade.delivery_identifier.present?
+        tr
+          th 物流公司
+          td = @trade.delivery_service_zh
+        tr
+          th 物流编号
+          td = @trade.delivery_identifier
+    - if @trade.status == 'pay'
+      .row
+        .col-xs-6
+          = link_to "取消订单", cancel_auction_trade_path(@trade), method: :put, class: "btn btn-default btn-block"
+        .col-xs-6.pay-link-container style="position: relative;"
+          a#wechatPay.btn.btn-danger.btn-block href="javascript: void(0);" 去支付
+    - elsif @trade.status == 'audit' && @trade.coupon_id.present? && @trade.group_trade.blank?
+      .pay-link-container
+        = link_to "没有成功参团？再查一次", wechat_query_auction_trade_path(@trade), class: "btn btn-danger btn-block"
+
+    br
+
+  .container
+    h5 商品信息
+    br
+  .trade-list
+    .container.trade-list-item
+      - coupon  = @trade.try(:coupon)
+      - product = coupon.try(:product) || @trade.units.try(:first).try(:item).try(:product)
+      .media
+        .media-left
+          a href="#"
+            img.media-object src="#{image_domain}#{product.try(:major_pic)}.m160.jpg"
+        .media-body
+          p.media-heading 
+            = link_to coupon.try(:name) || product.try(:name), auction_trade_path(@trade)
+            .small.text-muted  数量：1 
+        .media-right
+          p.text-right.text-danger.text-red
+            | ￥
+            = number_with_delimiter @trade.units.try(:first).try(:price)
+
+      div.trade-list-item-bottom.pull-right style="#{ 'padding-bottom: 0;' unless @trade.tax_price.to_i > 0 }"
+        span.text-muted 税费：￥
+        span.text-muted = @trade.tax_price.to_i
+        span.text-muted ，运费：￥
+        span.text-muted = @trade.delivery_price.to_i
+        span.text-muted ，总价：
+        span.text-red ￥
+        span.text-red = number_with_delimiter @trade.payment_price
+      - unless @trade.tax_price.to_i > 0
+        div style="clear: both; padding-bottom: 5px; text-align: right; color: #9E9D9D;"
+          | 注：关税<=50免征
+        
+  - group = @trade.try(:group_trade).try(:group)
+  - if group.present?
+    div.trade-group-detail-container
+      a href="#{ groupon_group_path group }"
+        span 查看团详情
+
+= render '/shared/post_sale'
+
+javascript:
+  var ihaveu_domain  = '#{ ihaveu_domain }';
+  var trade_id       = "#{ @trade.id }";
+  var checkout_token = "#{ @trade.checkout_token }";
+  var wechatPayBtn   = $("#wechatPay");
+  var waiting        = $("<div class='waiting' style='height: 34px;'>支付中...</div>");
+  var coupon_id      = "#{ @trade.coupon_id }";
+  
+  var bindPayEvent = function(){
+    $(".pay-link-container").empty().append(wechatPayBtn);
+    $(".waiting").remove();
+    $("#wechatPay").one('click', toPay);
+  };
+  
+  var toPay = function(){
+    $(".pay-link-container").empty().append(waiting);
+    couponPay(coupon_id, trade_id, checkout_token, ihaveu_domain, bindPayEvent);
+  };
+  
+  $("#wechatPay").one('click', toPay);

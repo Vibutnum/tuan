@@ -1,0 +1,52 @@
+- content_for :head do
+  = stylesheet_link_tag 'auction/contacts/form', media: 'all'
+.address-new
+  = form_for @contact do |f|
+    - if @query_str.present?
+      p.hidden
+        input type='hidden' name='query' value="#{ @query_str }"
+    p
+      label
+        span.tit 收货人
+        = f.text_field :name, class: "required-field address-new-name", placeholder: "名字"
+        span.address-msg-truer 请填写真实姓名
+    p
+      label
+        span.tit 手机号码
+        = f.text_field :mobile, class: %w{required-field tel-field}, placeholder: "手机号码"
+        span.show-error-msg 请填写正确的手机号
+    p
+      label
+        span.tit 省份
+        = f.select :province, [['- 请选择 -', '']].concat(get_provinces), {}, class: %w{province-selector selector-controller required-field}
+        span.show-error-msg 请选择省
+    p
+      label
+        span.tit 市
+        = f.select :city, {}, {}, class: %w{city-selector selector-controller required-field logic-hidden}
+        span.show-error-msg 请选择市
+    p
+      label
+        span.tit 区/县
+        = f.select :town, {}, {}, class: %w{town-selector selector-controller required-field logic-hidden}
+        span.show-error-msg 请选择区/县
+    p
+      label
+        span.tit 详细地址
+        = f.text_field :address, class: "required-field", placeholder: "详细地址"
+        span.show-error-msg 请填写详细地址
+    - if params[:location_id].present? && params[:location_id].to_i > 1 
+      p style="padding: 7px 7px 0 7px;color: #f64441;border-bottom: none;" 当前商品为跨境商品，需要正确填写身份证信息以便商品顺利通过海关。
+      p
+        label
+          span.tit 身份证号
+          = f.text_field :id_number, class: "required-field address-edit-id-number id-number-field", placeholder: "身份证号"
+          span.address-msg-truer 请填写真实有效的身份证号
+    - elsif !params[:location_id].present?
+      p
+        label
+          span.tit 身份证号
+          = f.text_field :id_number, class: "address-edit-id-number id-number-field", placeholder: "身份证号"
+          span.address-msg-truer 请填写真实有效的身份证号
+    p.action
+      = f.submit "确认"

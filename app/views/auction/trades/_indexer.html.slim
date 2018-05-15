@@ -1,0 +1,26 @@
+- trades.each do |trade|
+  - unit = trade.units.first
+  - product = unit.try(:item).try(:product)
+  - coupon = trade.coupon
+  li.container.trade-list-item
+    .media
+      .media-left
+        a href="javascript: void(0);"
+          img.media-object src="#{ image_domain }#{ product.try(:major_pic) }.m145.jpg" 
+      .media-body
+        p.media-heading 
+          = link_to coupon.try(:name) || product.try(:name), auction_trade_path(trade)
+          .small.text-muted  数量：1 
+      .media-right
+        p.text-right.text-red 
+          | ￥
+          = unit.price
+    div.trade-list-item-bottom
+      span.text-muted 总价：
+      span.text-red ￥
+      span.text-red = number_with_delimiter trade.payment_price 
+      - if trade.status == 'pay'
+        = link_to "去支付", auction_trade_path(trade), class: "pull-right btn btn-sm btn-default"
+        = link_to "取消订单", cancel_auction_trade_path(trade), method: :put, class: "pull-right margin-right-10"
+      - else
+        span.pull-right.text-muted class="#{ 'group-status-' + trade.group_trade.try(:status).to_s if trade.group_trade.present? && trade.status == 'audit' }" = trade.status_zh

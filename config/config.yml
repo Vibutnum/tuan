@@ -1,0 +1,49 @@
+domain:
+  uxuan: uxuan.ihaveu.com
+  ihaveu: www.ihaveu.com
+redis:
+  host: 127.0.0.1
+  port: 6479
+  db: 0
+payment:
+  wechat:
+    appId: 
+    partnerId: 
+    partnerKey: 
+    unifiedorderUrl: "https://api.mch.weixin.qq.com/pay/unifiedorder"
+    orderqueryUrl: "https://api.mch.weixin.qq.com/pay/orderquery"
+    refundUrl: "https://api.mch.weixin.qq.com/secapi/pay/refund"
+    apiclient_cert: "apiclient_cert.pem" # 文件放在config目录下
+    apiclient_key: "apiclient_key.pem"   # 文件放在config目录下
+oauth:
+  wechat_uxuan:
+    appid: 
+    secret: 
+    token: 
+    authorize_path: "https://open.weixin.qq.com/connect/oauth2/authorize"
+    access_token_path: "https://api.weixin.qq.com/sns/oauth2/access_token"
+    refresh_token_path: "https://api.weixin.qq.com/sns/oauth2/refresh_token"
+    user_info_path: "https://api.weixin.qq.com/sns/userinfo"
+mailer:
+  default_url_options:
+    host: localhost:3000
+  default_options:
+    from: 全球U选 <test@ihaveu.net>
+  smtp_settings:
+    address: mail.ihaveu.net
+    domain: ihaveu.net
+    port: 25
+    enable_starttls_auto: true
+  to:
+    refund:
+      - 收件人
+    daily_paper:
+      - 收件人
+data:
+  file_id: 631
+  gift_file_id: 464
+  gift_products_file_id: 467
+redis_ns: uxuan_cache
+ga:
+  js_domain: http://dev.lst.ihaveu.com
+  listen_domain: tuan.ihaveu.com # 注意，此处只填正式环境的域名

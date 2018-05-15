@@ -1,0 +1,19 @@
+css:
+  .nav-clearfix, .nav-bottom {
+    display: none;
+  }
+  .opt-container {
+    font-size: 0;
+    width: 100%;
+  }
+  .opt-step {
+    display: inline-block;
+    width: 50%;
+  }
+div.opt-container
+  div.opt-step 
+    a href="/auction/trades/defray?product_id=#{ params[:product] }"
+      = image_tag 'left.jpg', width: "100%"
+  div.opt-step 
+    a href="/auction/trades/defray?product_id=#{ params[:product] }&multi=1"
+      = image_tag 'right.jpg', width: "100%"

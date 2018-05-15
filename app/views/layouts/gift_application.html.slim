@@ -1,0 +1,156 @@
+= render "/layouts/common", from: "送礼"
+css:
+  .nav-bottom li {
+    width: 33.33%;
+  }
+- sign_package = ($client.get_jssign_package(request.original_url) rescue {})
+javascript:
+  (function(){
+    var pathname = location.pathname, product = "/gift/products", gift = "/gift/trades?q[is_gift_eq]=1&q[gift_from_null]=1", ucenter = "/gift/ucenter",
+        gift_ = /^\/gift\/trades|^\/auction\/trades/, ucenter_ = /^\/gift\/ucenter|^\/gift\/contacts/;
+    if(product == pathname){
+      $("a.nav-controller[href='" + product + "']").addClass('active');
+      return;
+    };
+    
+    if(gift_.test(pathname)){
+      $("a.nav-controller[href='" + gift + "']").addClass('active');
+      return;
+    };
+    
+    if(ucenter_.test(pathname)){
+      $("a.nav-controller[href='" + ucenter + "']").addClass('active');
+      return;
+    };
+  })();
+
+  try{
+    wx.config({
+      debug:     false,
+      appId:     "#{sign_package['appId'] }",
+      timestamp: "#{ sign_package['timestamp'] }",
+      nonceStr:  "#{ sign_package['nonceStr'] }",
+      signature: "#{ sign_package['signature'] }",
+      jsApiList: ['checkJsApi',
+        'onMenuShareTimeline',
+        'onMenuShareAppMessage',
+        'onMenuShareQQ',
+        'onMenuShareWeibo',
+        'showMenuItems',
+        'hideAllNonBaseMenuItem',
+        'showAllNonBaseMenuItem'
+      ]
+    });
+
+    share_config = function(opt){
+      return {
+        "share": {
+          'title':  opt.title, // 分享标题
+          'desc':   opt.desc,  // 分享描述
+          'link':   opt.link, // 分享链接
+          'imgUrl': opt.imgUrl, // 分享图标
+          success: function () { 
+            if(opt.callback){
+              wx.hideAllNonBaseMenuItem(); // 隐藏所有非基础按钮接口
+              if($('.shared-indicate').length > 0){
+                $(".main-content").css({
+                  overflow: "auto",
+                  height: "auto"
+                });
+                $('.shared-indicate').fadeOut();
+              }
+            }
+          },
+          cancel: function () { 
+            if(opt.callback){
+              wx.hideAllNonBaseMenuItem(); // 隐藏所有非基础按钮接口
+              if($('.shared-indicate').length > 0){
+                $(".main-content").css({
+                  overflow: "auto",
+                  height: "auto"
+                });
+                $('.shared-indicate').fadeOut();
+              }
+            }
+          }
+        }
+      }
+    } 
+    wx.ready(function () {
+      var gift_trades = /^\/gift\/trades/,
+          auction = /^\/auction\/trades/;
+      if(auction.test(location.pathname)){
+        //不允许分享
+        wx.hideAllNonBaseMenuItem();
+      }else if(gift_trades.test(location.pathname)){
+        //不允许分享
+        wx.hideAllNonBaseMenuItem();
+      }else{
+        // 通用设置
+        var _config = share_config({ title: '全球U选', desc:'千里送鹅毛，礼轻情意重。U选备好礼，煮酒待君来。', link: '#{ request.original_url }', imgUrl: "#{request.base_url}" + "#{ asset_path('logo.jpg')}",callback: false})
+        wx.showAllNonBaseMenuItem();
+        wx.onMenuShareAppMessage(_config.share);//分享给好友
+        wx.onMenuShareTimeline(_config.share);//分享到朋友圈
+        wx.onMenuShareQQ(_config.share);//分享给手机QQ
+        wx.onMenuShareWeibo(_config.share);//分享到微博
+      }
+      
+      try{
+        var parent_url = "#{request.base_url}#{ @parent_url }",
+        child_urls = #{ raw(@child_urls || []) },
+        alternate_child_urls = [];
+        var product_image = "#{ image_domain }#{ @product.try(:major_pic) }";
+        var product = "#{ raw @product.try(:name) || "" }";
+        var gift_children_size = "#{ (@trade.try(:gift_children) || []).size  }";
+      }catch(e){};
+      // 分享给好友
+      $('.present-to-friends').on('click',function(){
+        if(child_urls.length <= 0){
+          child_urls = alternate_child_urls;
+          alternate_child_urls = [];
+        };
+        if(child_urls.length > 0){
+          if($(".shared-indicate").length > 0){
+            $(".shared-indicate").fadeIn();
+            $(".main-content").css({
+              overflow: "hidden",
+              height: $(window).height()
+            });
+          };
+          var child_url_tmp = child_urls.shift(1);
+          alternate_child_urls.push(child_url_tmp);
+          var child_url = '#{request.base_url}' + child_url_tmp;
+          var _config = share_config({ title: '我送给您一份【'+ product + '】', desc:'订单已支付，就差收货地址啦~', link: child_url, imgUrl: product_image, callback: true})
+          wx.showMenuItems({
+            menuList: ['menuItem:share:appMessage'] // 要显示的菜单项，所有menu项见附录3
+          });
+          wx.onMenuShareAppMessage(_config.share);//分享给好友
+        }else{
+          uxuan.alert("您已经赠送完了");
+        };
+        
+      })
+
+      // 分享给群
+      $('.send-to-group').on('click',function(){
+        var _config = share_config({ title: '我送给大家'+ gift_children_size +'份【'+ product + '】', desc:'订单已支付，就差收货地址啦，手慢无哦~', link: parent_url, imgUrl: product_image, callback: true})
+        wx.showMenuItems({
+          menuList: ['menuItem:share:appMessage'] // 要显示的菜单项，所有menu项见附录3
+        });
+        wx.onMenuShareAppMessage(_config.share);//分享给好友
+      })
+
+      // 转赠他人
+      $('.gift-back-color').on('click', function(){
+        var imgurl = $('#product_major_pic')[0].src        
+        var _config = share_config({ title: '我送给您一份【'+ product + '】', desc:'订单已支付，就差收货地址啦~', link: '#{ request.original_url }', imgUrl: imgurl, callback: true})
+    
+        wx.showMenuItems({
+          menuList: ['menuItem:share:appMessage'] // 要显示的菜单项，所有menu项见附录3
+        });
+        wx.onMenuShareAppMessage(_config.share);//分享给好友
+      })
+    })
+  }catch(e){
+    console.log(e);
+  };

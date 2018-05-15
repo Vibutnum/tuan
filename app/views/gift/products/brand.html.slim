@@ -1,0 +1,28 @@
+- content_for :head do
+  = stylesheet_link_tag 'gift/products/index', media: 'all'
+- if @products.present?
+    div.list-nav = "#{ @products["title"] }"
+    div.list
+      ul
+        - (@products["products"] || []).each do |product|
+          li class="#{ 'no-more' if product.items_unsold_count <= 0 }" data-href="/gift/products/#{ product.id }"
+            a href="/gift/products/#{ product.id }"
+              span class="img"
+                = image_tag "product_loading.jpg", class: "scrollLoading", data: { url: "#{ image_domain }#{ product.major_pic }.m640.jpg" }, style: "background: none;"
+              h2 = product.name
+              p = "￥#{ number_with_delimiter product.discount }"
+= render '/shared/gift_code'
+javascript:
+  $(function(){
+    $(".list").on("click", ".no-more[data-href]", function(e){
+      if($(this).data("href") != undefined && $(this).data("href") != ""){
+        window.open($(this).data("href"), "_self");
+      };
+      e.preventDefault();
+      return false;
+    });
+  });
+  $(".scrollLoading").scrollLoading();
+  $(".scrollLoading").on("error", function(){
+    this.src = "#{ image_path 'product_loading.jpg' }";
+  });

@@ -1,0 +1,138 @@
+.wechat-page {
+	padding-top: 10px; 
+	padding-right: 4%; 
+	padding-left: 4%;
+	padding-bottom: 20px;
+	background-color: #f64441;
+	color: white;
+}
+.code-url {
+	width: 100%; 
+	display: inline-block;
+}
+.code-url-title {
+	width: 100%; 
+	text-align: center;
+	font-size: 18px;
+	font-weight: bold;
+	padding-top: 10px;
+	padding-bottom: 15px;
+}
+.code-url-show {
+	width: 100%; 
+	text-align: center;
+}
+.code-url-show img {
+	height:160px;
+}
+.code-url-share {
+	width: 100%; 
+	font-size: 18px; 
+	font-weight: bold;
+	text-align: center; 
+	padding-top: 15px;
+}
+.code-url-share a {
+	font-size: 22px;
+}
+.code-url-share a:link, .code-url-share a:visited, .code-url-share a:active, .code-url-share a:hover {
+   color: white;
+   text-decoration: underline;
+}
+.invitation {
+	margin-top: 15px;
+	background-color: white;
+	border-radius: 6px;
+	padding: 15px;
+}
+.invitation-title {
+	width: 100%; 
+	margin-top: 10px;
+	text-align: center;
+}
+.invitation-title div {
+	width: 100%; 
+	border: 2px solid #ffdc35; 
+	background-color: #FF0000;
+	font-size: 18px; 
+	font-weight: bold;
+	height: 36px; 
+	line-height: 32px; 
+	text-align: center; 
+	border-radius: 6px;
+}
+.invitation-title span {
+	font-size: 12px;
+	margin-left: 5px;
+}
+.invitation-items {
+	text-align: left; 
+}
+.invitation-item {
+	width: 100%; 
+	display: inline-block; 
+	margin-top: 5px; 
+	margin-bottom: 5px; 
+	height: 41px; 
+	line-height: 41px;
+	border-radius: 15px;
+	background-color: #FF8040;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+.invitation-item-me {
+	background-color: #FFBB77;
+}
+.invitation-item .no {
+	width: 18%; float: left;
+}
+.invitation-item .pic {
+	width: 15%; float: left;	
+}
+.invitation-item .pic img {
+	width: 30px; 
+	height: 30px; 
+	border-radius: 15px; 
+	margin-top: 6px;
+}
+.invitation-item .name {
+	width: 40%; 
+	float: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.invitation-item .fans {
+	text-align: right;	
+}
+.note {
+	width: 100%;
+	color: #707070;
+	border-top: 1px solid #ddd; 
+	margin-top: 10px; 
+	padding-top: 10px;
+	display: inline-block; 
+	line-height: 22px;
+}
+.shared-indicate {
+  display: none;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, .85);
+  text-align: center;
+  top: 0;
+  left: 0;
+  z-index: 105;
+  opacity: 1;
+  filter: alpha(opacity=100);
+}
+.shared-indicate img {
+  max-width: 100%;
+  background: none;
+}
+.arrow {
+  position: absolute;
+  right: 10%;
+  top: 5%;
+}

@@ -1,0 +1,229 @@
+/*更换颜色*/
+$color_red: #f64441; 
+#trade-show {
+  background: #eee;
+}
+
+// 订单详情
+
+.container {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+#trade-show { padding-top: 10px; background-color: #fff; }
+#trade-show .nav-fixed { position: fixed; background-color: #fff; height: 40px; width: 100%; font-size: 15px; text-align: center; z-index: 9999; top: 0; max-width: 640px;}
+#trade-show .nav-fixed a { height: 40px; line-height: 40px; width: 33.33%; float: left; display: block; box-sizing: border-box; border-right: 1px solid #ccc; border-bottom: 1px solid #ccc;}
+
+#trade-show .nav-fixed a:link,
+#trade-show .nav-fixed a:visited,
+#trade-show .nav-fixed a:hover,
+#trade-show .nav-fixed a:active {
+  color: #333;
+  text-decoration: none;
+}
+
+#trade-show .nav-fixed a.active:link,
+#trade-show .nav-fixed a.active:visited,
+#trade-show .nav-fixed a.active:hover,
+#trade-show .nav-fixed a.active:active { 
+  border-bottom: 2px solid $color_red; 
+  color: $color_red; 
+/*  border-bottom: 2px solid rgb(78, 194, 187); 
+  color: rgb(78, 194, 187); */
+}
+
+
+#trade-show { font-size: 13px; }
+#trade-show .trade-list { padding-top: 30px; background-color: #f8f8f8;}
+#trade-show .trade-list .trade-list-item { 
+  margin-bottom: 15px;
+  background-color: #fff;
+  border-bottom: 1px solid #eee;
+  position: relative;
+}
+
+#trade-show .trade-list .trade-list-item .nav-fixeds {
+  background-color: #fff;
+  height: 40px;
+  width: 100%;
+  font-size: 15px;
+  text-align: center;
+  z-index: 9999;
+  top: 0;
+  max-width: 640px;
+}
+#trade-show .trade-list .trade-list-item .nav-fixeds a.active {
+  color: $color_red;
+  border-bottom: none;
+}
+
+#trade-show .trade-list .trade-list-item .nav-fixeds a {
+  height: 40px;
+  line-height: 40px;
+  width: 50%;
+  float: left;
+  display: block;
+  box-sizing: border-box;
+  border-right: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+}
+
+#trade-show .show-addres {
+  background-color: #fff; 
+}
+#trade-show .bac-color {
+  background-color: #fff;
+}
+#trade-show .show-bottom {
+  border-bottom: 1px solid #eee; 
+  padding: 12px;
+}
+
+#trade-show .trade-step-container {
+  height: 105px;
+  width: 100%;
+  border-bottom: 1px solid rgb(221, 221, 221);
+  margin-bottom: 15px;
+  padding: 15px 20px 0 20px;
+  position: relative;
+  font-size: 12px;
+}
+#trade-show .trade-step-container .trade-step-bd-line {
+  height: 45px;
+  width: 100%;
+  border-bottom: 3px solid rgb(119, 119, 119);
+}
+#trade-show .trade-step-container span {
+  font-size: 25px;
+}
+#trade-show .trade-step-container .trade-step-check {
+  height: 75px;
+  width: 75px;
+  border: 2px solid rgb(119, 119, 119);
+  display: inline-block;
+  border-radius: 100%;
+  text-align: center;
+  line-height: 1.5;
+  padding-top: 13px;
+  position: absolute;
+  top: 18px;
+  background: #fff;
+}
+
+.pay-link-container a, .pay-link-container a:link {
+  color: #fff !important;
+}
+
+// 订单列表 & 详情 & 详情 共用样式
+#trade-show .media { border-bottom: 1px solid #eee; padding: 10px 0 10px 0; font-size: 13px;}
+#trade-show .media .media-body {
+  padding-top: 5px;
+}
+.trade-list-item .media img { width: 80px; height: 80px; }
+.trade-list-item .media img.small { width: 54px; height: 54px; }
+.trade-list-item a { color: #333 }
+.trade-list-item .trade-list-item-bottom {  padding: 5px 0 5px 0; line-height: 30px; font-size: 13px; }
+.trade-list-item .trade-list-item-bottom a { color: #777; font-size: 12px; }
+.margin-right-10 { margin-right: 10px; }
+.text-red { color: #DF2127 !important; }
+.text-lg { color: #DF2127 !important; font-size: 20px; }
+h4.media-heading { font-size: 14px; }
+h4.media-heading .small{ margin-left: 9px; }
+
+/**************************** 送礼订单列表 ****************************/
+ul.gift-to-friends-menu {
+  display: inline-block;
+  width: 33.33%;
+  border: 1px solid #ccc;
+  position: fixed;
+  z-index: 100000;
+  top: 53px;
+  left: 33.34%;
+  padding: 10px 20px;
+  background-color: #fff;
+  border-radius: 5px;
+}
+ul.gift-to-friends-menu li {
+  text-align: center;
+}
+ul.gift-to-friends-menu li:nth-child(1), ul.gift-to-friends-menu li:nth-child(2) {
+  border-bottom: 1px solid #ccc;
+}
+ul.gift-to-friends-menu li:nth-child(1) {
+  padding-bottom: 10px;
+}
+ul.gift-to-friends-menu li:nth-child(2) {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+ul.gift-to-friends-menu li:nth-child(3) {
+  padding-top: 10px;
+}
+.gift-to-friends-menu-arrow {
+  width: 16px;
+  height: 16px;
+  border-top: 1px solid #ccc;
+  border-left: 1px solid #ccc;
+  background-color: #fff;
+  position: fixed;
+  z-index: 100001;
+  top: 45px;
+  left: 50%;
+  left: -webkit-calc(50% - 8px);
+  left: -moz-calc(50% - 8px);
+  left: -ms-calc(50% - 8px);
+  left: -o-calc(50% - 8px);
+  left: calc(50% - 8px);
+  transform: rotateZ(45deg);
+}
+.shared-indicate {
+  display: none;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, .85);
+  text-align: center;
+  top: 0;
+  left: 0;
+  z-index: 100000;
+  opacity: 1;
+  filter: alpha(opacity=100);
+}
+.shared-indicate img {
+  max-width: 100%;
+  background: none;
+}
+.arrow {
+  position: absolute;
+  right: 10%;
+  top: 5%;
+}
+.trade-show-share-btn {
+  border-color: $color_red;
+  color: $color_red !important;
+}
+.trade-show-share-btn:active:link, .trade-show-share-btn:visited, .trade-show-share-btn:hover, .trade-show-share-btn:active {
+  border-color: $color_red !important;
+  background-color: #fff;
+}
+.submenu-icon {
+  background: image-url("submenu_icon.png") no-repeat 0 0;
+  background-size: 12px 12px;
+}
+.active .submenu-icon {
+  background: image-url("submenu_icon_hl.png") no-repeat 0 0;
+  background-size: 12px 12px;
+}
+.submenu-icon {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  position: relative;
+  left: 2px;
+  top: 1px;
+}
+.waiting {
+  background-color: $color_red !important;
+  border-color: $color_red !important;
+}

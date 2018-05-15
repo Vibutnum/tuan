@@ -1,0 +1,29 @@
+- coupons.each do |coupon|
+  div.data-link data-href="#{ groupon_coupon_path coupon }"
+    div.coupon-item
+      i class="#{ 'sale-out' if (coupon.is_redpack? ? redpack_sold_out? : coupon.sold_out?) }"
+      a
+        div.coupon-item-img
+          = image_tag "#{ image_domain }#{ coupon.product.try :major_pic }.m640.jpg"
+          div.coupon-item-mark
+            div
+              b = "#{ (coupon.discount * 10 / coupon.price.to_f).round(1) }折"
+              span = "#{ coupon.minimum }人团"
+        div.coupon-item-info
+          p.coupon-item-name#share_link_name = coupon.name
+          p.coupon-item-description = coupon.description
+        div.coupon-item-core
+          div.coupon-item-price
+            - if !coupon.is_redpack?
+              span.small = "#{ coupon.minimum }人团"
+              b = "￥#{ number_with_delimiter coupon.discount }"
+              | &nbsp;
+              span
+                | (包邮)
+              | &nbsp;
+              div.original-price
+                = "￥#{ number_with_delimiter coupon.price }"
+            - else
+              span.small = "新春团购红包，凑齐#{ coupon.minimum }人团购领取"
+          div.coupon-item-btn.small data-href="#{ coupon.sold_out? || coupon.is_redpack? ? (groupon_coupon_path coupon) : (new_auction_trade_path coupon_id: coupon.id, trade: { coupon_id: coupon.id }, location_id: coupon.product.location_id.to_i) }"
+            | 去开团

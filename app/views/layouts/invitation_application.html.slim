@@ -1,0 +1,119 @@
+= render '/layouts/common'
+css:
+  .main-content {
+    overflow: visible;
+  }
+- sign_package = ($client.get_jssign_package(request.url) rescue {})
+javascript:
+  try{
+    wx.config({
+      debug:     false,
+      appId:     "#{sign_package['appId'] }",
+      timestamp: "#{ sign_package['timestamp'] }",
+      nonceStr:  "#{ sign_package['nonceStr'] }",
+      signature: "#{ sign_package['signature'] }",
+      jsApiList: ['checkJsApi',
+        'onMenuShareTimeline',
+        'onMenuShareAppMessage',
+        'onMenuShareQQ',
+        'onMenuShareWeibo',
+        'showMenuItems',
+        'hideAllNonBaseMenuItem',
+        'showAllNonBaseMenuItem'
+      ]
+    });
+
+    share_config = function(opt){
+      return {
+        "share": {
+          'title':  opt.title, // 分享标题
+          'desc':   opt.desc,  // 分享描述
+          'link':   opt.link, // 分享链接
+          'imgUrl': opt.imgUrl, // 分享图标
+          success: function () { 
+            if(opt.callback){
+              wx.hideAllNonBaseMenuItem(); // 隐藏所有非基础按钮接口
+              if($('.shared-indicate').length > 0){
+                $(".main-content").css({
+                  overflow: "auto",
+                  height: "auto"
+                });
+                $('.shared-indicate').fadeOut();
+              }
+            }
+          },
+          cancel: function () { 
+            if(opt.callback){
+              wx.hideAllNonBaseMenuItem(); // 隐藏所有非基础按钮接口
+              if($('.shared-indicate').length > 0){
+                $(".main-content").css({
+                  overflow: "auto",
+                  height: "auto"
+                });
+                $('.shared-indicate').fadeOut();
+              }
+            }
+          }
+        }
+      }
+    } 
+    
+    var link_url = "#{ request.base_url }/wechat/invitations/#{ @current_account.id }/share";
+    var share_desc = "您的好友#{ @myconnection_uxuan['name'] rescue '' }正在参与【最强人气】活动，支持即得20元现金券，更有机会得大奖#{invitation_config['prize_name']}";
+    
+    if(/\/share$/.test(location.pathname)){
+      link_url = location.href;
+    };
+    
+    wx.ready(function () {
+      // 通用设置
+      var _config = share_config({ title: '全球U选', desc: share_desc, link: link_url, imgUrl: "#{ request.base_url }#{ asset_path('logo.jpg') }", callback: false});
+      wx.showAllNonBaseMenuItem();
+      wx.onMenuShareAppMessage(_config.share);//分享给好友
+      wx.onMenuShareTimeline(_config.share);//分享到朋友圈
+      wx.onMenuShareQQ(_config.share);//分享给手机QQ
+      wx.onMenuShareWeibo(_config.share);//分享到微博
+    });
+  }catch(e){
+    console.log(e);
+  };
+  
+  $(".share-my-qrcode").on("click", function(){
+    if($('.shared-indicate').length > 0){
+      $(".main-content").css({
+        overflow: "auto",
+        height: $(window).height()
+      });
+      $('.shared-indicate').fadeIn();
+    }
+  });
+  
+  $(document).on("touchstart", ".shared-indicate", function(e){
+    $(".main-content").css({
+      overflow: "auto",
+      height: "auto"
+    });
+    $(this).fadeOut();
+    e.preventDefault();
+    return false;
+  });
+  
+  $(".invitation-items img").on("error", function(e){
+    var $this = $(this);
+    if($this.attr("src") == "" && $this.data("id") != undefined){
+      $.ajax({
+        url: "/wechat/invitations/" + $this.data("id") + "/user_info",
+        type: "GET",
+        dataType: "JSON",
+        success: function(res){
+          if(res.headimgurl)
+            $this.prop("src", res.headimgurl);
+          if(res.nickname)
+            $this.parents(".invitation-item").children("div.name").text(res.nickname);
+        },
+        error: function(msg){ console.log(msg); }
+      });
+    };
+    e.preventDefault();
+    return false;
+  });

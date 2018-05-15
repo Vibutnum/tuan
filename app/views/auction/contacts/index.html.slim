@@ -1,0 +1,23 @@
+- content_for :head do
+  = stylesheet_link_tag 'auction/contacts/index', media: 'all'
+.address-index
+  - if @contacts.present?
+    = render 'indexer', contacts: @contacts, query_str: @query_str, coupon_id: params[:coupon_id], contact_id: params[:contact_id], query: @query
+  - else
+    div.address-missing
+.clear-address-index-fix
+div.address-index-fix-block
+  a href="/auction/contacts/new?#{ @query_str }" 新增地址
+javascript:
+  $(".address-index").on("click", "div[data-href]", function(e){
+    e.preventDefault();
+    if ($(e.target).hasClass('address-edit-icon')) return false;
+    window.open($(this).data("href"), "_self");
+  });
+  $(".address-index").on("click", ".address-edit-icon", function(e){
+    e.preventDefault();
+    window.open($(this).data("href"), "_self");
+  });
+  $(function(){
+    $(".address-index").scrollPaginate("#{ @contacts.total_pages }");
+  });

@@ -1,0 +1,64 @@
+- unit = @trade.units.first
+- product = unit.try(:item).try(:product)
+- contact = @trade.try(:unscoped_contact)
+ul.list-unstyled.trade-list
+  li.container.trade-list-item style="margin-bottom:0;"
+    .media data-href="/gift/products/#{ product.id }" style="border-bottom: none"
+      .media-heading
+        p style="margin-bottom: 10px;"
+          | 订单号：
+          span style="color: #f64441;" = "#{@trade.identifier}"
+      .media-left
+        a href="javascript: void(0);"
+          img.media-object src="#{ image_domain }#{ product.try(:major_pic) }.m160.jpg" 
+      .media-body
+        p.media-heading 
+          = product.try(:name)
+          .small.text-muted  = "数量：#{ @trade.units.size }"
+
+div.bac-color
+  div.trade-list-item-bottom.show-bottom
+    div.text-muted style="width: 52px; float: left;" 赠言
+    div style="padding-left: 70px;"
+      p.text-right style="word-wrap: break-word;" = @trade.gift_parent.try(:gift_remark)
+    div style="clear: left;"
+  div.trade-list-item-bottom.show-bottom
+    div.text-muted style="width: 52px; float: left;" 赠送人
+    div style="padding-left: 70px;"
+      p.text-right style="word-wrap: break-word;" = @trade.gift_parent.try(:user).try(:name)
+    div style="clear: left;"
+  div.trade-list-item-bottom.show-bottom
+    div.text-muted style="width: 52px; float: left;" 领取时间
+    div style="padding-left: 70px;"
+      p.text-right style="word-wrap: break-word;" = formatted_datetime @trade.updated_at
+    div style="clear: left;"
+
+div.show-addres
+  - if @trade.delivery_identifier
+    div.trade-list-item-bottom.show-bottom
+      div.text-muted style="width: 52px; float: left;" 物流公司
+      div style="padding-left: 70px;"
+        p.text-right style="word-wrap: break-word;" = @trade.delivery_service
+      div style="clear: left;"
+    div.trade-list-item-bottom.show-bottom
+      div.text-muted style="width: 52px; float: left;" 物流单号
+      div style="padding-left: 70px;"
+        p.text-right style="word-wrap: break-word;" = @trade.delivery_identifier
+      div style="clear: left;"
+  div.trade-list-item-bottom.show-bottom
+    div.text-muted style="width: 52px; float: left;" 收货人
+    div style="padding-left: 70px;"
+      p.text-right style="word-wrap: break-word;" = contact.name
+    div style="clear: left;"
+  div.trade-list-item-bottom.show-bottom
+    div.text-muted style="width: 52px; float: left;" 联系电话
+    div style="padding-left: 70px;"
+      p.text-right style="word-wrap: break-word;" = contact.mobile
+    div style="clear: left;"
+  div.trade-list-item-bottom.show-bottom
+    div.text-muted style="width: 52px; float: left;" 收货地址
+    div style="padding-left: 70px;"
+      p.text-right = [contact.try(:province), contact.try(:city), contact.try(:town)].join(' ')
+      p.text-right = contact.try(:address)
+    div style="clear: left;"
+

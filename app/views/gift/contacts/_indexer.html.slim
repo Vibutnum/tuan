@@ -1,0 +1,12 @@
+- contacts.each do |contact|
+  div.address-list-item class="#{ 'address-now' if contact_id.present? && contact_id.to_i == contact.id }" data-href='#{ trade_id.present? ? "/gift/trades/receiving_gifts?#{ query }&contact_id=#{ contact.id }" : (product_id.present? ? "/auction/trades/closely_gift?#{ query }&contact_id=#{ contact.id }" : edit_gift_contact_path(contact)) }'
+    p.address-name.address-content-display = contact.name
+    div.address-detail-container
+      p.address-phone.address-content-display = contact.mobile
+      p.address-content-display
+        - if contact.province.present?
+          span = contact.province.to_s + ' '
+        - if contact.city.present?
+          span = contact.city.to_s + ' '
+      div.address-edit-icon.glyphicon.glyphicon-pencil data-href="/gift/contacts/#{ contact.id }/edit?#{ query_str }"
+    p.address-detail.address-content-display = contact.address

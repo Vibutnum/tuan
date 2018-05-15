@@ -1,0 +1,55 @@
+- content_for :head do
+  = stylesheet_link_tag 'gift/trades/receiving_gifts', media: 'all'
+#trade-new
+  - if @contact.present?
+    .row.address
+      .col-xs-3.address-left
+        p 送至
+      .col-xs-9
+        a href="/gift/contacts?#{ @query }"
+          .media
+            .media-body
+              h4.media-heading
+                = @contact.name
+                span.small  = @contact.mobile
+              p
+                - if @contact.province.present?
+                  span.small = @contact.province.to_s + ' '
+                - if @contact.city.present?
+                  span.small = @contact.city.to_s + ' '
+                span.small = @contact.town
+              p
+                span.small = @contact.address
+                - if @contact.postcode.present?
+                  span.small.text-muted
+                    |（
+                    = @contact.postcode
+                    |）
+            .media-right
+              .address-right
+  - else
+    .no-address
+      a.text-center href="/gift/contacts/new?#{ @query }" 请选择收货地址
+  - if @product.try(:foreign_product?)
+    p style="padding: 5px 10px; font-size: 12px; color: #777; position: relative; top: -5px; color: #f64441;"
+      | * 当前商品为跨境商品，需要正确填写身份证信息以便商品顺利通过海关。
+  .order.container
+    .trade-list-item
+      .media
+        .media-left
+          a href="#"
+            img.media-object src="#{ image_domain }#{ @product.try(:major_pic) }.m160.jpg"
+        .media-body
+          p.media-heading 
+            = @product.try(:name)
+            .small.text-muted = "数量：#{ @trade.gift_per_count }"
+        .media-right
+      .trade-list-item-bottom
+        div style="font-size: 14px;" 赠言
+        div style="line-height: 1.4; color: #5A5858;" = @trade.gift_remark
+  .pay.container
+    div.pay-link-container
+    - if @contact.present?
+      = link_to "完成", received_gifts_gift_trade_path(@trade.id, @query_hash), method: :put, class: %w(btn btn-block btn-lg received-confirm), style: "color: #fff; border-radius: 0;"
+    - else
+      div.disabled-btn 完成

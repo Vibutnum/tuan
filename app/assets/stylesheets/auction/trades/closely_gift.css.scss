@@ -1,0 +1,174 @@
+$color_red: #f64441;  // 春节活动颜色
+.nav-clearfix, .nav-bottom {
+  display: none;
+}
+// 订单new
+#trade-new .address {
+  margin-bottom: 15px;
+  border-bottom: 1px solid #E4E4E4;
+}
+
+.address a:visited { text-decoration: none; color: #333; }
+
+#trade-new .address .address-left {
+  text-align: center;
+  padding: 9px 0;
+  font-weight: 500;
+}
+
+.pay-link-container a, .pay-link-container a:link {
+  color: #fff !important;
+}
+
+.address .address-right::after {
+  border-bottom: 1px solid #CDCDCD;
+    border-left: 1px solid #CDCDCD;
+    content: "";
+    display: inline-block;
+    height: 7px;
+    overflow: hidden;
+    position: absolute;
+    right: 30px;
+    top: 49%;
+    -webkit-transform: rotate(-135deg);
+    transform: rotate(-135deg);
+    width: 7px;
+}
+
+#trade-new .address .media { border-bottom: none;}
+
+#trade-new .no-address { height: 48px; }
+#trade-new .no-address a { padding: 15px 10px; display: block; }
+#trade-new .order { border-top: 1px solid #E4E4E4; border-bottom: 1px solid #DEDEDE;}
+#trade-new .trade-list-item-bottom { padding: 10px 0 10px 0; }
+
+#trade-new .pay  { padding-top:20px; }
+
+// 订单列表 & 详情 & 详情 共用样式
+#trade-new .media  { border-bottom: 1px solid #eee; padding: 10px 0 10px 0; }
+.trade-list-item .media  img, #trade-new .media  img { width: 64px; height: 64px; }
+.trade-list-item a { color: #333 }
+.trade-list-item .trade-list-item-bottom {  padding: 5px 0 5px 0; line-height: 30px; font-size: 13px; }
+.trade-list-item .trade-list-item-bottom a { color: #777; font-size: 12px; }
+.margin-right-10 { margin-right: 10px; }
+.text-red { color: #DF2127 !important; }
+.text-lg { font-size: 20px; }
+h4.media-heading { font-size: 14px; }
+h4.media-heading .small{ margin-left: 9px; }
+.row.fixed {
+  position: fixed;
+  bottom: 56px;
+  width: 100%;
+  padding: 10px 0 10px 0;
+  background-color: #f8f8f8;
+  max-width: 640px;
+}
+.disabled-btn {
+  color: #fff;
+  background-color: #bbb;
+  width: 100%;
+  padding: 10px 16px;
+  font-size: 18px;
+  line-height: 1.33;
+  display: inline-block;
+  margin-bottom: 0;
+  font-weight: normal;
+  text-align: center;
+  vertical-align: middle;
+  cursor: pointer;
+  background-image: none;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  font-size: 14px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.pay {
+  position: fixed;
+  bottom: 0;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+.gift-product-detail-container {
+  border-top: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  height: 80px;
+  padding: 0 10px;
+  margin-top: 1px;
+}
+.gift-product-detail-label {
+  float: left;
+  display: inline-block;
+  height: 80px;
+  line-height: 80px;
+}
+.gift-product-detail {
+  position: relative;
+  float: right;
+  display: inline-block;
+  height: 80px;
+  text-align: right;
+  line-height: 1.6;
+  padding-top: 18px;;
+  font-size: 13px
+}
+.text-genter-blue {
+  color: $color_red; 
+}
+.waiting {
+  background-color: $color_red !important;
+  border-color: $color_red !important;
+}
+.gift-pay-detail-container {
+  height: 80px;
+  padding: 0 10px;
+  margin-top: 1px;
+  border-bottom: none;
+  // color: #F54D05;
+  line-height: 80px;
+  font-size: 18px;
+  text-align: center;
+  font-weight: 500;
+}
+.defray-container {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  max-width: 640px;
+  background-color: #ddd;
+  height: 60px;
+  padding: 10px;
+}
+.defray-container a {
+  width: 100%;
+  background-color: $color_red;
+  border-color: $color_red;
+  display: inline-block;
+  color: #fff;
+  height: 40px;
+  border-radius: 5px;
+  text-align: center;
+  line-height: 40px;
+  font-size: 16px;
+  padding: 0 10px 0 10px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.disabled-pay {
+  width: 100%;
+  background-color: #bbb;
+  display: inline-block;
+  color: #fff;
+  height: 40px;
+  border-radius: 5px;
+  text-align: center;
+  line-height: 40px;
+  font-size: 16px;
+  padding: 0 10px 0 10px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}

@@ -1,0 +1,16 @@
+zh-CN:
+  groupon:
+    group_status:
+      pending: "等待团员"
+      success: "团购成功"
+      failure: "团购失败"
+      refunding: "团购失败，等待退款"
+      refunded: "团购失败，已退款"
+  auction:
+    trades:
+      audit_detail:
+        pending: "已付款，等待团员"
+        success: "团购成功，等待发货"
+        failure: "人数不足，团购失败"
+        refunding: "团购失败，等待退款"
+        refunded: "团购失败，已退款"

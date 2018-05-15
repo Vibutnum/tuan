@@ -1,0 +1,88 @@
+/*更换颜色*/
+$color_red: #f64441;  
+.address-index {
+  padding: 10px 10px 0 20px;
+}
+.address-index .address-list-item {
+  border-bottom: 1px solid #ddd;
+  padding: 10px 10px 10px 15px;
+  font-size: 13px;
+  line-height: 1.6;
+  min-height: 108px;
+}
+.address-index .address-list-item.address-now {
+  background-color: rgba(246, 68, 65, 0.3);
+}
+.address-index .address-list-item .address-name {
+  font-weight: 900;
+  font-size: 18px;
+  padding-right: 30px;
+}
+.address-index .address-list-item .address-content-display {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.address-index .address-list-item .address-detail-container {
+  position: relative;
+  padding-right: 30px;
+}
+.address-index .address-list-item .address-detail-container .address-phone {
+  font-size: 12px;
+}
+.address-index .address-list-item .address-detail-container .address-edit-icon {
+  display: inline-block;
+  position: absolute !important;
+  right: 0;
+  height: 100%;
+  width: 30px;
+  font-size: 18px;
+  color: $color_red;
+}
+.address-index .address-list-item .address-detail {
+  padding-right: 30px;
+}
+.clear-address-index-fix {
+  height: 61px;
+}
+.address-index-fix-block {
+  height: 60px;
+  width: 100%;
+  padding: 10px 20px 10px 20px;
+  position: fixed;
+  background-color: #eee;
+  bottom: 56px;
+  max-width: 640px;
+}
+.address-index-fix-block a {
+  display: inline-block;
+  width: 100%;
+  height: 40px;
+  color: #fff;
+  background-color: $color_red;
+  line-height: 40px;
+  text-align: center;
+  font-size: 16px;
+  border-radius: 6px;
+  font-weight: normal;
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.address-index-fix-block a:link, .address-index-fix-block a:visited, .address-index-fix-block a:hover, .address-index-fix-block a:active {
+  color: #fff;
+  text-decoration: none;
+};
+.address-missing {
+  background: image-url('address_missing.jpg') no-repeat center center;
+  background-size: 200px 200px;
+  width: 100%;
+  height: 200px;
+  margin-top: 40%;
+}
+.glyphicon-pencil:before {
+  position: relative;
+  top: 10px;
+  left: 5px;
+}

@@ -1,0 +1,26 @@
+- content_for :head do
+  = stylesheet_link_tag 'groupon/groups/index', media: 'all'
+  - if @group_trades.present?
+    css:
+      .main-content {
+        background-color: #f8f8f8;
+      }
+  - else
+    css:
+      .my-groups {
+        background-color: #fff;
+      }
+      .main-content {
+        background-color: #fff;
+      }
+div.my-groups
+  - if @group_trades.present?
+    = render 'indexer', group_trades: @group_trades
+  - else
+    div.group-missing
+= render '/shared/post_sale'
+
+javascript:
+  $(function(){
+    $(".my-groups").scrollPaginate("#{ @group_trades.total_pages }");
+  });

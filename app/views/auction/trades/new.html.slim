@@ -1,0 +1,221 @@
+- content_for :head do
+  = stylesheet_link_tag 'ucenter', media: 'all'
+  css:
+    .nav-clearfix, .nav-bottom {
+      display: none;
+    }
+- is_foreign = @coupon.product.try(:location_id).to_i > 1
+- taxation = (@coupon.product.try(:discount) * @coupon.product.try(:tax_rate).to_f).round
+- taxation = is_foreign ? (taxation <= 50 ? 0 : taxation) : 0
+#trade-new
+  - if @contact.present?
+    .row.address
+      .col-xs-3.address-left
+        p 送至
+      .col-xs-9
+        a href="/auction/contacts?#{ @query_str }"
+          .media
+            .media-body
+              h4.media-heading 
+                = @contact.name
+                span.small  = @contact.mobile
+              p
+                - if @contact.province.present?
+                  span.small = @contact.province.to_s + ' '
+                - if @contact.city.present?
+                  span.small = @contact.city.to_s + ' '
+                span.small = @contact.town
+              p 
+                span.small = @contact.address
+                - if @contact.postcode.present?
+                  span.small.text-muted 
+                    |（
+                    = @contact.postcode
+                    |）
+            .media-right
+              .address-right
+
+  - else
+    .no-address
+      a.text-center href="/auction/contacts/new?#{ @query_str }" 请选择收货地址
+  - if @coupon.try(:product).try(:foreign_product?)
+    p style="padding: 5px 10px; font-size: 12px; color: #777; position: relative; top: -5px;color: #f64441;"
+      | * 当前商品为跨境商品，需要正确填写身份证信息以便商品顺利通过海关。
+  .order.container
+    .trade-list-item
+      .media
+        .media-left
+          a href="#"
+            img.media-object src="#{image_domain}#{@coupon.product.try(:major_pic)}.m160.jpg" 
+        .media-body
+          p.media-heading 
+            = @coupon.try(:name)
+            .small.text-muted  数量：1
+        .media-right
+          p.text-right.text-danger.text-red
+            | ￥
+            - if params[:ungrouped]
+              = number_with_delimiter @coupon.price
+            - else
+              = number_with_delimiter @coupon.discount
+
+      .trade-list-item-bottom.text-right
+        span.text-muted 税费：
+        span.text-red = "￥#{ taxation }，"
+        span.text-muted 运费：
+
+        - if @coupon.price < 200 && params[:ungrouped] 
+          span.text-red ￥
+          span.text-red = 20
+        - else
+          span.text-muted ￥
+          span.text-muted = 0
+        span.tesxt-muted ，总价：
+        span.text-danger.text-red.text-lg
+          | ￥
+          - if params[:ungrouped] && @coupon.price < 200
+            = number_with_delimiter(@coupon.price + 20 + taxation)
+          - elsif params[:ungrouped]
+            = number_with_delimiter(@coupon.price + taxation)
+          - else
+            = number_with_delimiter(@coupon.discount + taxation)
+  .pay.container
+    p.text-muted.small 请选择支付方式
+    .pay-list
+      .pay-item.pay-wx.selected
+        span.pay-item-state
+        span.pay-item-icon
+        span.pay-item-title 微信支付
+    div.pay-link-container
+      a#wechatPay.btn.btn-block.btn-danger.btn-lg href="javascript: void(0);" 立即支付
+  = render '/shared/group_rule', two: true
+
+javascript:
+  var ihaveu_domain = '#{ ihaveu_domain }';
+  var coupon_id     = "#{ @coupon.try(:id) }";
+  var ungrouped     = "#{ params[:ungrouped] }";
+  var contact_id    = "#{ @contact.try(:id) }";
+  var group_id      = "#{ (params['trade'] || {})['group_id'] }";
+  var user_id       = "#{ @current_user.id }";
+  var data;
+  
+  var data = {
+    "trade": { 
+      "contact": {
+        "id" : contact_id
+      }, 
+      "client": "uxuan"
+    }, 
+    "coupon_id": coupon_id
+  };
+  
+  if(ungrouped)
+  {
+    data.ungrouped = true;
+  }
+  else
+  {
+    // data.trade.coupon_id -> 开团
+    data.trade.coupon_id = coupon_id;
+  };
+  
+  // data.trade.group_id -> 参团
+  if (group_id) data.trade.group_id = group_id;
+  
+  var wechatPayBtn = $("#wechatPay");
+  var waiting = $("<div class='waiting' style='height: 45px; font-size: 18px; line-height: 1.33; padding: 10px 16px;'>支付中...</div>");
+  
+  var bindPayEvent = function(){
+    $(".pay-link-container").empty().append(wechatPayBtn);
+    $(".waiting").remove();
+    $("#wechatPay").one('click', toPay);
+  };
+  
+  var toPay = function(){
+    if(contact_id == undefined || contact_id == "")
+    {
+      uxuan.alert('请选择配送地址');
+      $("#wechatPay").one('click', toPay);
+      return;
+    };
+    $(".pay-link-container").empty().append(waiting);
+
+    // 提交订单
+    /***
+    $.ajax({
+      url: "/auction/trades.json",
+      dataType: 'JSON',
+      data: data,
+      type: 'POST',
+      success: function(result){
+        var res = result.res;
+        var success_url = result.success_url;
+        var fail_url = result.fail_url;
+        
+        if(res && res.appId){
+            // 调起支付
+            WeixinJSBridge.invoke('getBrandWCPayRequest', {
+              'appId': res['appId'],
+              'timeStamp': res['timeStamp'],
+              'nonceStr': res['nonceStr'],
+              'package': res['package'],
+              'signType': res['signType'],
+              'paySign': res['paySign']
+            }, function(res){
+              if(res.err_msg == "get_brand_wcpay_request:ok" ) {
+                window.location.href = success_url;
+              }else{
+                window.location.href = fail_url;
+              };
+              //使用以上方式判断前端返回,微信团队郑重提示：res.err_msg将在用户支付成功后返回ok，
+              //但并不保证它绝对可靠。
+              //因此微信团队建议，当收到ok返回时，向商户后台询问是否收到交易成功的通知，若收到通知，
+              //前端展示交易成功的界面；若此时未收到通知，商户后台主动
+              //调用查询订单接口，查询订单的当前状态，并反馈给前端展示相应的界面。
+            });
+        }else{
+          uxuan.alert("调起支付失败");
+          bindPayEvent();
+        };
+      },
+      error: function(err){
+        console.log('error：' + err);
+        uxuan.alert('出错了');
+        bindPayEvent();
+      }
+    });
+    ***/
+
+    // 提交订单
+    $.ajax({
+      url: "/auction/trades.json",
+      dataType: 'JSON',
+      data: data,
+      type: 'POST',
+      success: function(result){
+        if(!result){
+          uxuan.alert("出错了");
+          bindPayEvent();
+          return;
+        };
+        if ( result && result.trade ){
+          var trade = result.trade;
+          // 提交订单成功，拉起支付
+          couponPay(trade.coupon_id, trade.id, trade.checkout_token, ihaveu_domain, null);
+        }else if(result && result.error){
+          uxuan.alert(result.error);
+          bindPayEvent();
+        }else{
+          uxuan.alert('对不起，订单提交失败');
+          bindPayEvent();
+        };
+      },
+      error: function(err){
+        uxuan.alert("对不起，请求下单接口失败");
+        console.log('对不起，请求下单接口失败');
+        bindPayEvent();
+      }
+    });
+  };
+  
+  $("#wechatPay").one('click', toPay);

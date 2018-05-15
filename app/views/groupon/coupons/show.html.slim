@@ -1,0 +1,173 @@
+- content_for :head do
+  = stylesheet_link_tag 'groupon/coupons/show', media: 'all'
+- product  = @coupon.product
+- sold_out = @coupon.sold_out?
+- cannot_buy_grouped = @coupon.cannot_buy_grouped?
+- if @coupon.is_redpack?
+  = image_tag "redpack_group.jpg", width:"100%", id: "share_link_image_redpack", class: "hidden"
+div.coupon-show
+  div#focus.focus
+    div.hd
+      ul
+        - @coupon.product_pics.each_with_index do |_, i|
+          li class="#{ 'on' if i == 0 }" = i + 1
+    div.bd
+      div.temp-wrap
+        ul
+          - @coupon.product_pics.each do |pic|
+            li
+              img.share_link_image src="#{ image_domain }#{ pic }"
+  div.product-info 
+    div.product-detail
+      div.product-name#share_link_name = @coupon.name
+      - if !@coupon.is_redpack?
+        div.product-summary
+          div.product-price
+            span.text-muted.small
+              | 已售&nbsp;
+              i
+                = number_with_delimiter product.try(:sold_count).to_i
+              | &nbsp;件
+              |，库存&nbsp;
+              i
+                = number_with_delimiter product.try(:items_unsold_count).to_i
+              | &nbsp;件
+            div.clear-product-price-fix
+          div.product-location
+            p = "发货地：#{ product.location_description }"
+      - if (@coupon.is_redpack? ? redpack_sold_out? : sold_out)
+        div.out-pic
+    p.play-description
+      - if !@coupon.is_redpack?
+        = "支付开团并邀请 #{ @coupon.minimum.to_i - 1 } 人参团，人数不足自动退款，详见下方拼团玩法"
+      - else
+        = "财运红包, 邀请 #{ @coupon.minimum.to_i - 1 } 人参团，即可开启红包"
+    - if (@coupon.is_redpack? ? redpack_sold_out? : sold_out)
+      div.back-to-index
+        a href="/g/coupons" 去首页逛逛吧
+- description = markdown_to_html product.try(:description2)
+- if description.size > 0
+  div.product-description
+    = description
+= render '/shared/group_rule', one: true
+- if @coupon.is_redpack?
+  = image_tag "redpack_rule.png", width:"100%"
+= render '/shared/qr_code'
+div.clear-kt-fix
+- if !@coupon.is_redpack?
+  div.fixed-kt class="#{ 'sold-out' if sold_out }"
+    a.coupon-show-back-to-home href="javascript: void(0);"
+      span.glyphicon.glyphicon-home data-link="/g/coupons"
+      a.buy.buy-groupon class="#{ 'cannot-buy-grouped' if cannot_buy_grouped }" href="#{ (sold_out || cannot_buy_grouped) ? 'javascript: void(0);' : new_auction_trade_path(coupon_id: @coupon.id, trade: { coupon_id: @coupon.id }, location_id: product.location_id.to_i )}"
+        div.discount.display-price
+          i ￥
+          b.discount-display = number_with_delimiter @coupon.discount
+          i
+            | &nbsp;/&nbsp;
+          | 件
+          br
+          font
+            = "#{ @coupon.minimum }人团"
+            | &nbsp;
+            | (
+            | &nbsp;
+            | 包邮
+            | &nbsp;
+            | )
+      a.buy.buy-alone href="#{ sold_out ? 'javascript: void(0);' : new_auction_trade_path(coupon_id: @coupon.id, ungrouped: true, location_id: product.location_id.to_i) }"
+        div.display-price
+          i ￥
+          b = number_with_delimiter @coupon.price
+          i
+            | &nbsp;/&nbsp;
+          | 件
+          br
+          font
+            | 单独购买
+- else
+  div.fixed-kt
+    a.coupon-show-back-to-home href="javascript: void(0);"
+      span.glyphicon.glyphicon-home data-link="/g/coupons"
+      a.buy.buy-groupon.is_redpack href="javascript: void(0);" style="width: 95%;"
+        div.discount.display-price
+          b.discount-display style="line-height: 2.5;" = "#{ @coupon.minimum }人组团拼财运"
+      a.buy.buy-groupon.redpack.hidden href="javascript: void(0);" style="width: 95%; opacity: 0.7;"
+        div.discount.display-price
+          b.discount-display style="line-height: 2.5;" 提交中...
+
+javascript:
+  var bindOneClick = function(){
+    $('.is_redpack').one('click', function(){
+      $('.is_redpack').addClass('hidden')
+      $('.redpack').removeClass('hidden')
+      var data = {
+        "coupon_id": "#{ @coupon.id }"
+      };
+      $.ajax({
+        url: "/auction/trades/red_packet.json",
+        dataType: 'JSON',
+        data: data,
+        type: 'POST',
+        success: function(result){
+          if(!result){
+            uxuan.alert("出错了");
+            bindOneClick();
+            $('.is_redpack').removeClass('hidden')
+            $('.redpack').addClass('hidden')
+            return;
+          };
+          if(result.trade){
+            window.location.href = '/g/groups/' + result.trade.group_id.toString();
+          }else if(result.error){
+            uxuan.alert(result.error);
+            bindOneClick();
+            $('.is_redpack').removeClass('hidden')
+            $('.redpack').addClass('hidden')
+          }else{
+            uxuan.alert("对不起，出错了");
+            bindOneClick();
+            $('.is_redpack').removeClass('hidden')
+            $('.redpack').addClass('hidden')
+          };
+        },
+        error: function(msg){
+          uxuan.alert("对不起，请求红包接口失败");
+          console.log(msg);
+          bindOneClick();
+          $('.is_redpack').removeClass('hidden')
+          $('.redpack').addClass('hidden')
+        }
+      });
+    });
+  };
+  
+  bindOneClick();
+  
+  function doTouchSlide() {
+    TouchSlide({
+      slideCell: "#focus",
+      titCell: ".hd ul",
+      mainCell: ".bd ul",
+      effect: "left",
+      autoPlay: !1,
+      autoPage: !0,
+      delayTime: 200,
+      interTime: 0,
+      switchLoad: "_src"
+    });
+  };
+  $(function(){
+    try{
+      // 轮播图
+      doTouchSlide();
+    }catch(e){};
+    
+    $(window).on('onorientationchange' in window ? 'orientationchange' : 'resize', function(){
+      try{
+        doTouchSlide();
+      }catch(e){};
+    });
+  });
+  $("[data-link]").on("click", function(){
+    window.open($(this).data("link"), "_self");
+  });

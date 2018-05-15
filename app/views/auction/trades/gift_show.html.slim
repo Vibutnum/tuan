@@ -1,0 +1,88 @@
+- content_for :head do
+  = stylesheet_link_tag 'gift/trades/gift_show', media: 'all'
+#trade-show
+  .nav-fixed
+    a class="#{ (!@trade.gift_from.present? && !@trade.is_gift)  ? 'active' : ''}" href="/gift/trades?q[is_gift_eq]=0" 犒劳自己
+    a.gift-to-friends class="#{ (!@trade.gift_from.present? && @trade.is_gift) ? 'active' : ''}" href="javascript: void(0);"
+      | 我送朋友
+      span.submenu-icon
+    / 订单状态：audit、ship、recieve、complete、prepare
+    a class="#{ @trade.gift_from.present? ? 'active' : ''}" href="/gift/trades?q[is_gift_eq]=1&q[gift_from_not_null]=1" 朋友送我
+
+  - if @trade.gift_from.present?
+    = render 'unpay_show', trades: @trade
+  - else
+    = render 'pay_show', trades: @trade
+div.gift-to-friends-menu-arrow.hidden
+ul.gift-to-friends-menu.hidden
+  li
+    a href="/gift/trades?q[is_gift_eq]=1&q[gift_from_null]=1" 我送朋友
+  li
+    a href="/gift/trades?q[is_gift_eq]=1&q[gift_from_null]=1&not_empty=0" 朋友未领
+  li
+    a href="/gift/trades?q[is_gift_eq]=1&q[gift_from_null]=1&not_empty=1" 朋友已领
+javascript:
+  var ihaveu_domain  = '#{ ihaveu_domain }';
+  var trade_id       = "#{ @trade.try(:id) }";
+  var checkout_token = "#{ @trade.try(:checkout_token) }";
+  var wechatPayBtn   = $("#wechat-pay-now");
+  var waiting        = $("<div class='waiting' style='height: 30px; line-height: 29px; font-size: 12px; width: 58px; padding: 0; margin-top: 2px;'>支付中...</div>");
+  
+  var bindPayEvent = function(){
+    $(".pay-link-container").empty().append(wechatPayBtn);
+    $(".waiting").remove();
+    $("#wechat-pay-now").one('click', toPay);
+  };
+  
+  var toPay = function(){
+    $(".pay-link-container").empty().append(waiting);
+    $.ajax({
+      url: ihaveu_domain + "/auction/trades/" + trade_id + "/checkout?trade[payment_service]=wechat_uxuan&trade[checkout_token]=" + checkout_token,
+      dataType: 'JSON',
+      type: 'GET',
+      success: function(res) {
+        if(res && res.appId){
+            // 调起支付
+            WeixinJSBridge.invoke('getBrandWCPayRequest', {
+              'appId': res['appId'],
+              'timeStamp': res['timeStamp'],
+              'nonceStr': res['nonceStr'],
+              'package': res['package'],
+              'signType': res['signType'],
+              'paySign': res['paySign']
+            }, function(res){
+              if(res.err_msg == "get_brand_wcpay_request:ok" ) {
+                window.location.href = '/auction/trades/' + trade_id.toString() + '/wechat_query';
+              }else{
+                window.location.href = '/auction/trades/gift_show?trade_id=' + trade_id.toString();
+              };
+              //使用以上方式判断前端返回,微信团队郑重提示：res.err_msg将在用户支付成功后返回ok，但并不保证它绝对可靠。
+              //因此微信团队建议，当收到ok返回时，向商户后台询问是否收到交易成功的通知，若收到通知，前端展示交易成功的界面；
+              //若此时未收到通知，商户后台主动调用查询订单接口，查询订单的当前状态，并反馈给前端展示相应的界面。
+            });
+        }else{
+          // window.location.href = ihaveu_domain + '/sessions.json'
+          uxuan.alert('对不起，调起支付失败');
+          bindPayEvent();
+        };
+      },
+      error: function(err){
+        uxuan.alert('您的网络质量有点差，请多试几次');
+        bindPayEvent();
+      }
+    });
+  };
+  
+  $("#wechat-pay-now").one('click', toPay);
+
+  $(".gift-to-friends").on("click", function(){
+    $(".gift-to-friends-menu-arrow").toggleClass("hidden");
+    $(".gift-to-friends-menu").toggleClass("hidden");
+  });
+  $("[data-href]").on("click", function(e){
+    if($(this).data("href") != undefined && $(this).data("href") !=  ""){
+      window.open($(this).data("href"), "_self");
+    };
+    e.preventDefault();
+    return false;
+  });

@@ -1,0 +1,147 @@
+- content_for :head do
+  css:
+    .post-sale-link {
+      display: block;
+      background: url("#{ image_path('uxuan_bg.png') }") no-repeat -7px -226px;
+      background-size: 320px 400px;
+      width: 49px;
+      height: 49px;
+      position: fixed;
+      bottom: 20%;
+    }
+    .post-sale-link-init {
+      right: -50px;
+    }
+    @-webkit-keyframes 'dancer' {
+      0% {
+        -webkit-transform: rotate(0deg);
+      }
+      30% {
+        -webkit-transform: rotate(15deg);
+      }
+      50% {
+        -webkit-transform: rotate(0deg);
+      }
+      70% {
+        -webkit-transform: rotate(10deg);
+      }
+      80% {
+        -webkit-transform: rotate(0deg);
+      }
+      95% {
+        -webkit-transform: rotate(5deg);
+      }
+      100% {
+        -webkit-transform: rotate(0deg);
+      }
+    }
+    @-moz-keyframes 'dancer' {
+      0% {
+        -moz-transform: rotate(0deg);
+      }
+      30% {
+        -moz-transform: rotate(15deg);
+      }
+      50% {
+        -moz-transform: rotate(0deg);
+      }
+      70% {
+        -moz-transform: rotate(10deg);
+      }
+      80% {
+        -moz-transform: rotate(0deg);
+      }
+      95% {
+        -moz-transform: rotate(5deg);
+      }
+      100% {
+        -moz-transform: rotate(0deg);
+      }
+    }
+    @-ms-keyframes 'dancer' {
+      0% {
+        -ms-transform: rotate(0deg);
+      }
+      30% {
+        -ms-transform: rotate(15deg);
+      }
+      50% {
+        -ms-transform: rotate(0deg);
+      }
+      70% {
+        -ms-transform: rotate(10deg);
+      }
+      80% {
+        -ms-transform: rotate(0deg);
+      }
+      95% {
+        -ms-transform: rotate(5deg);
+      }
+      100% {
+        -ms-transform: rotate(0deg);
+      }
+    }
+    @-o-keyframes 'dancer' {
+      0% {
+        -o-transform: rotate(0deg);
+      }
+      30% {
+        -o-transform: rotate(15deg);
+      }
+      50% {
+        -o-transform: rotate(0deg);
+      }
+      70% {
+        -o-transform: rotate(10deg);
+      }
+      80% {
+        -o-transform: rotate(0deg);
+      }
+      95% {
+        -o-transform: rotate(5deg);
+      }
+      100% {
+        -o-transform: rotate(0deg);
+      }
+    }
+    @keyframes 'dancer' {
+      0% {
+        transform: rotate(0deg);
+      }
+      30% {
+        transform: rotate(15deg);
+      }
+      50% {
+        transform: rotate(0deg);
+      }
+      70% {
+        transform: rotate(10deg);
+      }
+      80% {
+        transform: rotate(0deg);
+      }
+      95% {
+        transform: rotate(5deg);
+      }
+      100% {
+        transform: rotate(0deg);
+      }
+    }
+    .post-sale-link-show {
+      right: 25px;
+      -webkit-transition: right 0.5s ease 0.5s;
+      -moz-transition: right 0.5s ease 0.5s;
+      -ms-transition: right 0.5s ease 0.5s;
+      -o-transition: right 0.5s ease 0.5s;
+      transition: right 0.5s ease 0.5s;
+      -webkit-animation: dancer 1s ease-in-out .8s;
+      -moz-animation: dancer 1s ease-in-out .8s;
+      -ms-animation: dancer 1s ease-in-out .8s;
+      -o-animation: dancer 1s ease-in-out .8s;
+      animation: dancer 1s ease-in-out .8s;
+    }
+a class="post-sale-link post-sale-link-init" href="/statics/post_sale.html"
+javascript:
+  $(function(){
+    $(".post-sale-link").addClass("post-sale-link-show");
+  });

@@ -1,0 +1,40 @@
+- content_for :head do
+  = stylesheet_link_tag 'gift/trades/index', media: 'all'
+#trade-index
+  .nav-fixed
+    a class="#{params[:q] && params[:q][:is_gift_eq] == '0' ? 'active' : ''}" href="/gift/trades?q[is_gift_eq]=0" 犒劳自己
+    a.gift-to-friends class="#{params[:q] && params[:q][:is_gift_eq] == '1' && params[:q][:gift_from_null] == '1' ? 'active' : ''}" href="javascript: void(0);"
+      | 我送朋友
+      span.submenu-icon
+    / 订单状态：audit、ship、recieve、complete、prepare
+    a class="#{params[:q] && params[:q][:is_gift_eq] == '1' && params[:q][:gift_from_not_null] == '1' ? 'active' : ''}" href="/gift/trades?q[is_gift_eq]=1&q[gift_from_not_null]=1" 朋友送我
+  - if @trades.present?
+    - from = (params[:q] && params[:q][:is_gift_eq] == '0') ? "total" : ((params[:q] && params[:q][:is_gift_eq] == '1' && params[:q][:gift_from_null] == '1') ? "send" : ((params[:q] && params[:q][:is_gift_eq] == '1' && params[:q][:gift_from_not_null] == '1') ? "receive" : ""))
+    ul.list-unstyled.trade-list
+      = render 'indexer', trades: @trades, from: from
+  - else
+    div.trade-missing
+div.gift-to-friends-menu-arrow.hidden
+ul.gift-to-friends-menu.hidden
+  li
+    a href="/gift/trades?q[is_gift_eq]=1&q[gift_from_null]=1" style="display: inline-block; width: 100%;" 我送朋友
+  li
+    a href="/gift/trades?q[is_gift_eq]=1&q[gift_from_null]=1&not_empty=0" style="display: inline-block; width: 100%;" 朋友未领
+  li
+    a href="/gift/trades?q[is_gift_eq]=1&q[gift_from_null]=1&not_empty=1" style="display: inline-block; width: 100%;" 朋友已领
+javascript:
+  $(".gift-to-friends").on("click", function(){
+    $(".gift-to-friends-menu-arrow").toggleClass("hidden");
+    $(".gift-to-friends-menu").toggleClass("hidden");
+  });
+  $(function(){
+    $(".list-unstyled.trade-list").scrollPaginate("#{ @trades.total_pages }");
+  });
+  $("#trade-index").on("click", "[data-href]", function(e){
+    var href = $(this).data("href");
+    if(href != undefined && href !=  ""){
+      window.open(href, "_self");
+    };
+    e.preventDefault();
+    return false;
+  });

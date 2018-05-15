@@ -1,0 +1,98 @@
+/*更换颜色*/
+$color_red: #f64441; 
+.nav-clearfix, .nav-bottom {
+  display: none;
+}
+label {
+  display: block !important;
+}
+.address-new, .address-edit {
+  font-size: 13px;
+  position: relative;
+  padding: 10px;
+  border-top: 1px solid #e4e4e4;
+}
+.address-new p, .address-edit p {
+  border-bottom: 1px solid #cbcbcb;
+  padding: 10px 20px 10px 100px;
+  position: relative;
+}
+
+.address-new .tit, .address-edit .tit {
+  bottom: 0;
+  color: #666;
+  height: 20px;
+  left: 0;
+  line-height: 20px;
+  margin: auto 0;
+  padding-right: 20px;
+  position: absolute;
+  right: 0;
+  text-align: right;
+  top: 0;
+  width: 80px;
+}
+
+.address-new input, .address-edit input {
+  border: 1px solid #ddd;
+  box-sizing: border-box;
+  color: #333;
+  font-size: 14px;
+  height: 35px;
+  line-height: 25px;
+  padding: 0 5px;
+  vertical-align: top;
+  width: 100%;
+}
+
+.address-new select, .address-edit select {
+  background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAKCAYAAACjd+4vAAAA10lEQVQ4T7XSPxJFMBAG8G8PQK/TiFP4U3BcOgegMxq1Eyh0Gqo8m5m8wQQzed5WJnbyy7cJya26roPrugjDEE+1taNpGnieByHEU/vlf2rbVvZ9DyJCHMe3OKN1XWMYBtWfJIk1TkVRyGma1Mnu8D2qY3DiNE2tUtOyLLKqKtzhJjQIAoXyYW2K+I7XdcUV/g9UTZdh/jDhURRhHEd1p7p+Tar3+cIm/DzCt9BDYo2ck7+d1Jh4j5dliXme1ZLv+8jz3PohmR7fYdT7Bp3ccRxkWfYqys4HBLeZ4wvKfMkAAAAASUVORK5CYII=") no-repeat scroll right center/15px 5px #fff;
+  border: 1px solid #ddd;
+  font-size: 14px;
+  height: 35px;
+  line-height: 35px;
+  padding: 0 16px 0 5px;
+  position: relative;
+  width: 100%;
+}
+
+.address-new select option, .address-edit select option {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.address-new [type='submit'], .address-edit [type='submit'] {
+  background-color: $color_red;
+  border: 0 none;
+  border-radius: 2px;
+  color: #fff;
+  display: block;
+  font-size: 16px;
+  height: 40px;
+  line-height: 40px;
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+.address-new .action, .address-edit .action {
+  border-bottom: 0 none;
+  padding: 15px 10px;
+}
+.address-new .show-error-msg, .address-edit .show-error-msg {
+  color: red;
+  display: none;
+}
+.address-new .logic-hidden, .address-edit .logic-hidden {
+  visibility: hidden;
+}
+.address-new .submitting, .address-edit .submitting {
+  opacity: 0.7;
+  filter: alpha(opacity=70);
+}
+.address-msg-truer {
+  color: #aaa;
+}
+.msg-danger {
+  color: red !important;
+}

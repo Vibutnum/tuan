@@ -1,0 +1,22 @@
+development:
+  ttl: 604800
+  namespace: cash_money
+  sessions: false
+  debug: false
+  servers: localhost:11211
+
+test:
+  ttl: 604800
+  namespace: cash_money
+  sessions: true
+  debug: false
+  servers: localhost:11211
+
+production:
+  ttl: 604800
+  namespace: cash_money
+  sessions: false
+  debug: false
+  servers: localhost:11211
+  cache_servers: localhost:11211
+  session_servers: localhost:11211

@@ -1,0 +1,50 @@
+- content_for :head do
+  = stylesheet_link_tag 'wechat/invitations/index', media: 'all'
+  css:
+    img {
+      background: none;
+    }
+    html, body, .main-content, .wechat-page {
+      min-height: 100%;
+      background-color: #f64441;
+    }
+div.wechat-page
+  // 二维码
+  div.code-url.share-my-qrcode
+    div.code-url-title
+      / p 扫码凭借力 助我上总榜
+      p 人气王座 一决高下
+    div.code-url-show
+      img src="#{@current_account.invitation_code_url}"
+    div.code-url-share
+      p
+        a.share-my-qrcode href="javascript: void(0);" 点击分享
+        span 我的专属二维码
+  // title
+  div.invitation-title
+    div
+      | 冠军排行榜
+      span = invitation_config['status']
+  div.invitation
+    // 排行榜
+    div.invitation-items
+      - if @results.present?
+        - @results.each_with_index do |r, index|
+          div.invitation-item
+            div.no = "第#{ index + 1 }名"
+            div.pic
+              img data-id="#{ r['inviter_id'] }" src="#{ r['pic'] }"
+            div.name = r["name"]
+            div.fans = r["fans"]
+      - unless @hide_mine
+        div.invitation-item.invitation-item-me
+          div.no 有机会
+          div.pic
+            img src="#{ @myconnection_uxuan.try :[], 'pic' }"
+          div.name = @myconnection_uxuan.try :[], "name"
+          div.fans = @myfans.try(:size)
+
+    // 说明
+    = render 'note'
+div.shared-indicate
+  = image_tag 'share_it.png', class: 'arrow'

@@ -1,0 +1,211 @@
+- content_for :head do
+  = stylesheet_link_tag 'groupon/coupons/show', media: 'all'
+  = stylesheet_link_tag 'gift/products/show', media: 'all'
+div.coupon-show
+  div#focus.focus
+    div.hd
+      ul
+        - @product_img.each_with_index do |_, i|
+          li class="#{ 'on' if i == 0 }" = i + 1
+    div.bd
+      div.temp-wrap
+        ul
+          - @product_img.each do |pic|
+            li
+              img.share_link_image src="#{ image_domain }#{ pic }"
+
+  div.product-info 
+    div.product-detail
+      div.product-name#share_link_name = @product.name
+      div.product-summary
+        div.product-price
+          span.text-muted.small
+            | 已售&nbsp;
+            i
+              = number_with_delimiter @product.try(:sold_count).to_i
+            | &nbsp;件
+            |，库存&nbsp;
+            i
+              = number_with_delimiter @product.try(:items_unsold_count).to_i
+            | &nbsp;件
+          div.clear-product-price-fix
+        div.product-location
+          p = "发货地：#{ @product.location_description }"
+      - if @product.try(:items_unsold_count).to_i <= 0
+        div.out-pic
+- description = markdown_to_html @product.try(:description2) || @product.try(:description)
+- if description.size > 0
+  div.product-description
+    = description
+= render '/shared/gift_code'
+div.clear-kt-fix
+div.fixed-kt
+  a.coupon-show-back-to-home href="javascript: void(0);"
+    span.glyphicon.glyphicon-home data-link="/gift/products"
+    a.buy.buy-groupon class="#{ 'buy-disabled' if @product.items_unsold_count < 1 }" href="#{ @product.items_unsold_count < 1 ? 'javascript: void(0);' : ('/gift/trades/opt?product=' + @product.id.to_s) }"
+      div.discount.display-price
+        i ￥
+        b = number_with_delimiter @product.discount
+        i
+          | &nbsp;/&nbsp;
+        | 件
+        br
+        font
+          | 赠送他人
+    a.buy.buy-alone class="#{ @product.items_unsold_count < 1 ? 'buy-disabled' : 'buy-alone-play' }" href="javascript: void(0);"
+      div.display-price
+        i ￥
+        b = number_with_delimiter @product.discount
+        i
+          | &nbsp;/&nbsp;
+        | 件
+        br
+        font
+          | 犒劳自己
+- taxation = @product.discount * @product.tax_rate.to_f
+- is_foreign = @product.try(:location_id).to_i > 1
+div.shared-indicate
+  div.product-popup
+    div.layout-title
+      div.thumb
+        img src="#{ image_domain }#{ @product.try(:major_pic) }.m80.jpg"
+      div.product-popup-detail
+        p.product-popup-detail-title style="text-align: left;" = @product.name
+        div.product-popup-price
+          div.current-price
+            i.price-popup = "￥#{ number_with_delimiter @product.discount }"
+      div.product-popup-cancel
+        | x
+    div.tax-rate-container
+      div.tax-rate-label.small 税费
+      div.tax-rate-detail
+        i style="font-size: 12px; color: #777;"
+          | 关税<=50免征&nbsp;
+        i = "￥"
+        span = "#{ number_with_delimiter(is_foreign ? (taxation.round <= 50 ? 0 : taxation.round) : 0) }"
+      div.clear-both
+    div.product-count
+      div.gift-label.small 购买数量
+      div class="input-spinner center"
+        button type="button" class="square" -
+        input.product-count-input type="tel" onkeyup="this.value=this.value.replace(/\D|^0/g,'');if(this.value.length > 3) this.value = this.value.substr(0,3);" pattern="\d*" class="size-one" data-min="1" min="1" value="1"
+        button type="button" class="square" +
+      div.clear-both
+    div.reward-product-container
+      a.reward-product href="javascript: void(0);" 下一步
+javascript:
+  var tax_rate = parseFloat("#{ is_foreign ? taxation : 0 }");
+  function calcTaxRate(num){
+    var num = parseInt(num);
+    var text = Math.round((isNaN(num) ? 0 : num) * tax_rate);
+    $(".tax-rate-detail span").text(addCommas(text).toString());
+    text <= 50 ? $(".tax-rate-detail span").addClass("tax-remove") : $(".tax-rate-detail span").removeClass("tax-remove");
+  };
+  function doTouchSlide() {
+    TouchSlide({
+      slideCell: "#focus",
+      titCell: ".hd ul",
+      mainCell: ".bd ul",
+      effect: "left",
+      autoPlay: !1,
+      autoPage: !0,
+      delayTime: 200,
+      interTime: 0,
+      switchLoad: "_src"
+    });
+  };
+  $(function(){
+    try{
+      // 轮播图
+      doTouchSlide();
+    }catch(e){};
+    
+    $(window).on('onorientationchange' in window ? 'orientationchange' : 'resize', function(){
+      try{
+        doTouchSlide();
+      }catch(e){};
+    });
+    
+    calcTaxRate($(".product-count-input").val());
+  });
+  $("[data-link]").on("click", function(e){
+    var link = $(this).data("link");
+    if(link != undefined && link != ""){
+      window.open(link, "_self");
+    };
+    e.preventDefault();
+    return false;
+  });
+  
+  $(".buy-alone-play").on("click", function(){
+    $(".shared-indicate").addClass("shared-indicate-show");
+    $(".main-content").css({
+      overflow: "hidden",
+      height: $(window).height()
+    });
+  });
+  $(document).on("touchstart", ".product-popup-cancel", function(e){
+    $(".main-content").css({
+      overflow: "auto",
+      height: "auto"
+    });
+    $(".shared-indicate").removeClass("shared-indicate-show");
+    e.preventDefault();
+    return false;
+  });
+  
+  function attrDefault($el, data_var, default_val){
+    if(typeof $el.data(data_var) != 'undefined'){
+      return $el.data(data_var);
+    };
+    return default_val;
+  };
+  $(".input-spinner").each(function(i, el){
+    var $this      =    $(el),
+        $minus     =    $this.find('button:first'),
+        $plus      =    $this.find('button:last'),
+        $input     =    $this.find('input'),
+        //minus_step =    attrDefault($minus, 'step', -1),
+        //plus_step  =    attrDefault($minus, 'step', 1),
+        //min        =    attrDefault($input, 'min', null),
+        //max        =    attrDefault($input, 'max', null);
+        min = parseInt("#{ Auction::Product::MIN_COUNT }"),
+        max = parseInt("#{ Auction::Product::MAX_COUNT }");
+    $this.find('button').on('touchstart', function(ev){
+      ev.preventDefault();
+      var $this =   $(this),
+          val   =   $input.val(),
+          //step  =   attrDefault($this, 'step', $this[0] == $minus[0] ? -1 : 1);
+          step = $this[0] == $minus[0] ? -1 : 1;
+      if ($this[0] == $minus[0] && val == min)
+        return;
+      //if(!step.toString().match(/^[0-9-\.]+$/)){
+        //step = $this[0] == $minus[0] ? -1 : 1;
+      //};
+      //if(!val.toString().match(/^[0-9-\.]+$/)){
+        //val = 0;
+      //};
+      $input.val( parseFloat(val) + step ).trigger('keyup');
+    });
+    $input.keyup(function(){
+      if(min != null && parseFloat($input.val()) < min){
+        $input.val(min);
+      }
+      else
+      if(max != null && parseFloat($input.val()) > max){
+        $input.val(max);
+        uxuan.alert("最多只能购买" + max.toString() + "件哟");
+      };
+      calcTaxRate($input.val());
+    });
+  });
+  $(".reward-product").on("click", function(e){
+    var count = $(".product-count-input").val();
+    if(count == "" || count == undefined || count == null){
+      uxuan.alert("请输入购买数量");
+      return;
+    };
+    window.open("/auction/trades/closely_gift?product_id=#{ @product.id }&location_id=#{@product.location_id}&count=" + count.toString(), "_self");
+    e.preventDefault();
+    return false;
+  });

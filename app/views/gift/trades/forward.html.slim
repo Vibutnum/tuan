@@ -1,0 +1,56 @@
+- content_for :head do
+  = stylesheet_link_tag 'gift/trades/forward', media: :all
+  / = stylesheet_link_tag 'gift/trades/common', media: :all
+/ div.trade-new-step-container
+/   div.trade-new-step.trade-new-step-one.trade-new-step-now
+/     div
+/       span.glyphicon.glyphicon-shopping-cart
+/     | 1.填写赠言
+/   div.trade-new-step.trade-new-step-two.trade-new-step-now
+/     div
+/       span.glyphicon.glyphicon-check
+/     | 2.完成支付
+/   div.trade-new-step.trade-new-step-three.trade-new-step-now
+/     div
+/       span.glyphicon.glyphicon-gift
+/     | 3.赠送礼包
+h4.text-center.forward-title
+  div.ok-container
+    span.glyphicon.glyphicon-ok.ok
+  span.forward-content.active-color 支付成功
+br
+p.text-center
+  | 订单号  
+  span.active-color
+    = "#{ @trade.identifier }"
+p.text-center 
+  | 点击
+  span.active-color 下方按钮
+  | 分享即可赠送
+div.gift-btn-group
+  a.present-to-friends href="javascript: void(0);" style="border: 1px solid transparent; background-color: #FFF; border-color: #ccc;"
+    | 赠送好友
+  a.send-to-group href="javascript: void(0);"
+    | 发送至群
+div style="clear: both;"
+div.shopping-continued style="width: 100%; text-align: center; padding: 10px; margin-top: 10px;"
+  a href="/gift/products" style="color: #777;" < 继续购物
+div.shared-indicate
+  = image_tag 'share_it.png', class: 'arrow'
+javascript:
+  $(".send-to-group").on("click", function(){
+    $(".shared-indicate").fadeIn();
+    $(".main-content").css({
+      overflow: "hidden",
+      height: $(window).height()
+    });
+  });
+  $(document).on("touchstart", ".shared-indicate", function(e){
+    $(".main-content").css({
+      overflow: "auto",
+      height: "auto"
+    });
+    $(this).fadeOut();
+    e.preventDefault();
+    return false;
+  });

@@ -1,0 +1,76 @@
+- content_for :head do
+  = stylesheet_link_tag 'gift/trades/received_results', media: :all
+- if @product.present?
+  div style="text-align: center;"
+    a href="/gift/products/#{ @product.id }"
+      img src="#{ image_domain }#{ @product.try(:major_pic) }.s400.jpg" style="width: 200px; height: 200px;"
+- if @success_msg
+  p.text-center.gift-success = @success_msg
+- elsif @error_msg
+  p.text-center.gift-failure = @error_msg
+
+- if @meet_child_trades.present?
+  div.received-status-container
+    div.received-status-header
+      p.received-status-text 领取状态
+      - if @only_child
+        - if (@meet_child_trades.size - @meet_child_trades.size) > 0 
+          p.received-status-description = "还有 #{ @meet_child_trades.size - @meet_child_trades.size } 份礼品"
+        - else
+          p.received-status-description = "已经领光啦"
+      - else
+        p.received-status-description = "还有 #{ @trade.gift_count - @meet_child_trades.size } 份礼品"
+    div.received-status-body
+      div.received-status-photo-circle
+      - @meet_child_trades.each do |child|
+        div.received-status-detail-container
+          img src="#{ child.user.try(:account).try(:connection_uxuan).try(:pic) }"
+          div.received-status-detail data-link="#{ child.user_id == @user.id ? gift_show_auction_trades_path(trade_id: child.id) : '/gift/products/' + @product.id.to_s }"
+            div.received-status-detail-dir
+            div.received-status-detail-name
+              p = child.user.try(:name)
+              p = "#{ child.receive_gift_at.try(:strftime, '%Y-%m-%d %H:%M') }"
+            div.received-status-detail-product
+              div 商品
+              p = "#{ child.units.try(:[], 0).try(:item).try(:product).try(:name) }"
+            div.received-status-detail-count
+              div 数量
+              p = "x#{ child.units.try(:size) }"
+div.clear-gift-btn-fix
+div.gift-btn-group
+  a.attention.attention-highlight href="javascript: void(0);" style="border: 1px solid transparent; background-color: #FFF; border-color: #ccc;"
+    | 关注全球U选
+  a.to-gift href="/gift/products"
+    | 我也要送礼
+div#shared-indicate.shared-qr-code-none
+  div
+    span
+      = image_tag 'attention.png', class: 'arrow'
+div.show-attention
+  = image_tag 'attentive_us.png'
+javascript:
+  $("[data-link]").on("click", function(e){
+    var link = $(this).data("link");
+    if (link != undefined && link != "") window.open(link, "_self");
+    e.preventDefault();
+    return false;
+  });
+  $(document).on("click", function(e){
+    $(".show-attention").fadeOut();
+    $(".attention-highlight").removeClass("attention-highlight");
+  });
+  $(".attention").on("click", function(){
+    $("#shared-indicate").attr("class", "shared-qr-code");
+    $(".main-content").css({
+      overflow: "hidden",
+      height: $(window).height()
+    });
+  });
+  $("#shared-indicate").click(function(){
+    $(".main-content").css({
+      overflow: "auto",
+      height: "auto"
+    });
+    $("#shared-indicate").attr("class", "shared-qr-code-none");
+  });
+  

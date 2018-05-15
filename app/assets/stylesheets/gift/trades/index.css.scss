@@ -1,0 +1,122 @@
+/*更换颜色*/
+$color_red: #f64441; 
+
+/*// 订单列表*/
+#trade-index { padding-top: 10px; background-color: #fff; }
+#trade-index .nav-fixed { position: fixed; background-color: #fff; height: 40px; width: 100%; font-size: 15px; text-align: center; z-index: 9999; top: 0; max-width: 640px;}
+#trade-index .nav-fixed a { height: 40px; line-height: 40px; width: 33.33%; float: left; display: block; box-sizing: border-box; border-right: 1px solid #ccc; border-bottom: 1px solid #ccc;}
+
+#trade-index .nav-fixed a:link,
+#trade-index .nav-fixed a:visited,
+#trade-index .nav-fixed a:hover,
+#trade-index .nav-fixed a:active {
+  color: #333;
+  text-decoration: none;
+}
+
+#trade-index .nav-fixed a.active:link,
+#trade-index .nav-fixed a.active:visited,
+#trade-index .nav-fixed a.active:hover,
+#trade-index .nav-fixed a.active:active { 
+  border-bottom: 2px solid $color_red; 
+  color: $color_red; 
+/*  border-bottom: 2px solid rgb(78, 194, 187); 
+  color: rgb(78, 194, 187); */
+}
+
+#trade-index .trade-list { padding-top: 30px; background-color: #f8f8f8;}
+#trade-index .trade-list .trade-list-item { 
+  margin-bottom: 15px;
+  background-color: #fff;
+  border-bottom: 1px solid #eee;
+  position: relative;
+}
+#trade-index .trade-list .trade-list-item:last-child {
+  margin-bottom: 0;
+};
+
+// 订单列表 & 详情 & 详情 共用样式
+#trade-index .media { border-bottom: 1px solid #eee; padding: 10px 0 10px 0; font-size: 13px;}
+#trade-index .media .media-body {
+  padding-top: 5px;
+}
+.trade-list-item .media img { width: 80px; height: 80px; }
+.trade-list-item .media img.small { width: 44px; height: 44px; }
+.trade-list-item a { color: #333 }
+.trade-list-item .trade-list-item-bottom {  padding: 5px 0 5px 0; line-height: 30px; font-size: 13px; }
+.trade-list-item .trade-list-item-bottom a { color: #777; font-size: 12px; }
+.margin-right-10 { margin-right: 10px; }
+.text-red { color: #DF2127 !important; }
+.text-lg { color: #DF2127 !important; font-size: 20px; }
+h4.media-heading { font-size: 14px; }
+h4.media-heading .small{ margin-left: 9px; }
+
+.trade-missing {
+  background: image-url('trade_missing.png') no-repeat center center;
+  background-size: 200px 200px;
+  height: 200px;
+  width: 100%;
+  margin-top: 40%;
+}
+/**************************** 送礼订单列表 ****************************/
+ul.gift-to-friends-menu {
+  display: inline-block;
+  width: 33.33%;
+  border: 1px solid #ccc;
+  position: fixed;
+  z-index: 100000;
+  top: 53px;
+  left: 33.34%;
+  padding: 10px 20px;
+  background-color: #fff;
+  border-radius: 5px;
+}
+ul.gift-to-friends-menu li {
+  text-align: center;
+}
+ul.gift-to-friends-menu li:nth-child(1), ul.gift-to-friends-menu li:nth-child(2) {
+  border-bottom: 1px solid #ccc;
+}
+ul.gift-to-friends-menu li:nth-child(1) {
+  padding-bottom: 10px;
+}
+ul.gift-to-friends-menu li:nth-child(2) {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+ul.gift-to-friends-menu li:nth-child(3) {
+  padding-top: 10px;
+}
+.gift-to-friends-menu-arrow {
+  width: 16px;
+  height: 16px;
+  border-top: 1px solid #ccc;
+  border-left: 1px solid #ccc;
+  background-color: #fff;
+  position: fixed;
+  z-index: 100001;
+  top: 45px;
+  left: 50%;
+  left: -webkit-calc(50% - 8px);
+  left: -moz-calc(50% - 8px);
+  left: -ms-calc(50% - 8px);
+  left: -o-calc(50% - 8px);
+  left: calc(50% - 8px);
+  transform: rotateZ(45deg);
+}
+.submenu-icon {
+  background: image-url("submenu_icon.png") no-repeat 0 0;
+  background-size: 12px 12px;
+}
+.active .submenu-icon {
+  background: image-url("submenu_icon_hl.png") no-repeat 0 0;
+  background-size: 12px 12px;
+}
+.submenu-icon {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  position: relative;
+  left: 2px;
+  top: 1px;
+}

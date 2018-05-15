@@ -1,0 +1,83 @@
+- content_for :head do
+  = stylesheet_link_tag 'auction/contacts/form', media: 'all'
+  css:
+    #trade-new .address {
+      margin-top: 10px;
+      border-bottom: 1px solid #E4E4E4;
+    }
+    .address a:visited { text-decoration: none; color: #333; }
+    #trade-new .address .address-left {
+      text-align: center;
+      padding: 9px 0;
+      font-weight: 500;
+    }
+    #trade-new .address .media { border-bottom: none; }
+    
+    #trade-new .order { border-top: 1px solid #E4E4E4; border-bottom: 1px solid #DEDEDE; }
+    
+    #trade-new .media  { border-bottom: 1px solid #eee; padding: 10px 0 10px 0; }
+    .trade-list-item .media  img, #trade-new .media  img { width: 64px; height: 64px; }
+    .trade-list-item a { color: #333 }
+    h4.media-heading { font-size: 14px; }
+    h4.media-heading .small{ margin-left: 9px; }
+    .row.fixed {
+      position: fixed;
+      bottom: 56px;
+      width: 100%;
+      padding: 10px 0 10px 0;
+      background-color: #f8f8f8;
+      max-width: 640px;
+    }
+    .address-edit p {
+      padding: 10px 20px 10px 80px;
+    }
+- product = @trade.try(:units).try(:[], 0).try(:item).try(:product)
+p style="padding: 10px;" 补填地址信息
+#trade-new
+  .order.container
+    .trade-list-item
+      .media
+        .media-left
+          a href="javascript: void(0);"
+            img.media-object src="#{ image_domain }#{ product.try(:major_pic) }.m160.jpg" 
+        .media-body
+          p.media-heading 
+            = product.try(:name)
+            .small.text-muted  = "数量：#{ @trade.try(:units).try(:size) }"
+      
+  .row.address
+    .col-xs-3.address-left
+      p 送至
+    .col-xs-9
+      a href="javascript: void(0);"
+        .media
+          .media-body
+            h4.media-heading 
+              = @contact.name
+              span.small  = @contact.mobile
+            p
+              - if @contact.province.present?
+                span.small = @contact.province.to_s + ' '
+              - if @contact.city.present?
+                span.small = @contact.city.to_s + ' '
+              span.small = @contact.town
+            p 
+              span.small = @contact.address
+              - if @contact.postcode.present?
+                span.small.text-muted 
+                  |（
+                  = @contact.postcode
+                  |）
+          .media-right
+            .address-right
+.address-edit
+  = form_for(@contact, url: "/#{ @module }/contacts/#{ @contact.id }/submission", method: :put) do |f|
+    p.hidden
+      input type='hidden' name='trade_id' value="#{ @trade.id }"
+    p
+      label
+        span.tit 身份证号
+        input type='text' name='contact[id_number]' value="#{ @contact.id_number }" class="required-field address-edit-id-number id-number-field" placeholder="身份证号"
+        span.address-msg-truer class="#{ 'msg-danger' if @err_code }" 请填写真实有效的身份证号
+    p.action style="margin-top: 50px;"
+      = f.submit "确认"

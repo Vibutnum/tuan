@@ -1,0 +1,245 @@
+- content_for :head do
+  = stylesheet_link_tag    'auction/trades/defray', media: 'all'
+- is_foreign = @product.try(:location_id).to_i > 1
+- taxation = is_foreign ? @product.discount * @product.tax_rate.to_f : 0
+div.present-container
+  div.present-detail
+    | 赠送给
+    - if @multi
+      | &nbsp;
+      span.gift-count-show.color-main = "#{ @trade.gift_count }"
+      | &nbsp;
+    - else
+      = "一"
+    | 人，共&nbsp;
+    span.gift-count-total-show.color-main = "#{ @trade.gift_per_count.to_i * @trade.gift_count.to_i }"
+    | &nbsp;件
+  div.clear-both
+- if @multi
+  div.gift-count-container
+    div
+      div.gift-label 礼包赠送人数
+      div class="input-spinner center"
+        button type="button" class="square"
+        input name="gift_count" type="tel" value="#{ @trade.gift_count }" class="size-one data-required gift-count-num" data-min="1" data-detail="礼包赠送人数" min="1" pattern="\d*" onkeyup="this.value=this.value.replace(/\D|^0/g,'');if(this.value.length > 3) this.value = this.value.substr(0,3);"
+        button type="button" class="square"
+      div.clear-both
+div.gift-count-container.gift-per-count-container
+  div
+    div.gift-label = "#{ @multi ? '每人领取数量' : '购买数量' }"
+    div class="input-spinner center"
+      button type="button" class="square"
+      input name="gift_per_count" type="tel" value="#{ @trade.gift_per_count }" class="size-one data-required gift-per-count-num" data-min="1" data-detail="#{ @multi ? '每人领取数量' : '购买数量' }" min="1" pattern="\d*" onkeyup="this.value=this.value.replace(/\D|^0/g,'');if(this.value.length > 3) this.value = this.value.substr(0,3);"
+      button type="button" class="square"
+    div.clear-both
+div.gift-product-detail-container
+  div.gift-product-detail-label 商品单价
+  div.gift-product-detail
+    span = "￥#{ number_with_delimiter @product.discount }"
+div.gift-product-detail-container
+  div.gift-product-detail-label 税费
+  div.gift-product-detail
+    i.tax-description.color-main
+      | 关税<=50免征&nbsp;
+    i ￥
+    span.tax-rate-detail = "#{ number_with_delimiter taxation }"
+div.gift-product-detail-container.product-bottom-margin
+  div.gift-product-detail-label 总计
+  div.gift-product-detail
+    span.color-main.total-price = "￥#{ number_with_delimiter(@product.discount + (taxation <= 50 ? 0 : taxation)) }"
+div.gift-remark
+  | 附赠言
+  br
+  textarea.remark data-value="一点心意，希望您喜欢~" placeholder="一点心意，希望您喜欢~" 一点心意，希望您喜欢~
+div.gift-mobile-container
+  div.gift-mobile-label 送礼人电话
+  div.gift-mobile
+    input.tel-field type="tel" name="mobile" value="#{ @mobile }" placeholder="请填写您的手机号"
+  div.post-sale-desc 方便客服及时与您联系哟
+div.defray-container
+  a#wechat-pay-now.pay-now href="javascript: void(0);"
+    | 微信支付
+javascript:
+  var tax_rate = parseFloat("#{ taxation }");
+  var product_discount = parseInt("#{ @product.try(:discount).to_i }");
+  function calcTaxRate(){
+    var i = parseInt($(".gift-per-count-num").val());
+    var num = $(".gift-count-num").length > 0 ? parseInt($(".gift-count-num").val()) : 1;
+    if (isNaN(num)) num = 0;
+    if (isNaN(i)) i = 0;
+    
+    var tax = tax_rate * i;
+    tax = Math.round(tax);
+    if (tax >= 50) tax = num * tax;
+    
+    $(".tax-rate-detail").text(addCommas(tax).toString());
+    tax <= 50 ? $(".tax-rate-detail").addClass("tax-remove") : $(".tax-rate-detail").removeClass("tax-remove");
+    
+    var total = i * product_discount * num;
+    if (tax > 50) total += tax;
+    $(".total-price").text("￥" + addCommas(total).toString());
+    if($(".gift-count-show").length > 0){
+      $(".gift-count-show").text(addCommas(num).toString());
+    };
+    
+    $(".gift-count-total-show").text(addCommas(i * num).toString());
+  };
+  
+  function attrDefault($el, data_var, default_val){
+    if(typeof $el.data(data_var) != 'undefined'){
+      return $el.data(data_var);
+    };
+    return default_val;
+  };
+  $(".input-spinner").each(function(i, el){
+    var $this      =    $(el),
+        $minus     =    $this.find('button:first'),
+        $plus      =    $this.find('button:last'),
+        $input     =    $this.find('input'),
+        min        =    parseInt("#{ Auction::Product::MIN_COUNT }"),
+        max        =    parseInt("#{ Auction::Product::MAX_COUNT }");
+    $this.find('button').on('touchstart', function(ev){
+      ev.preventDefault();
+      var $this =   $(this),
+          val   =   $input.val(),
+          step = $this[0] == $minus[0] ? -1 : 1;
+      if ($this[0] == $minus[0] && val == min)
+        return;
+      $input.val( parseFloat(val) + step ).trigger('keyup');
+    });
+    $input.keyup(function(){
+      if(min != null && parseFloat($input.val()) < min){
+        $input.val(min);
+      }
+      else
+      if(max != null && parseFloat($input.val()) > max){
+        $input.val(max);
+        uxuan.alert($input.data("detail") + "最多不能超过" + max.toString() + "哟");
+      };
+      
+      calcTaxRate();
+    });
+  });
+  
+  $(function(){
+    calcTaxRate();
+  });
+  
+  var ihaveu_domain = '#{ ihaveu_domain }';
+  var data = {
+    "auction_trade": {
+      "client": "gift"
+    },
+    "product_id": "#{ @product.id }"
+  };
+  
+  function tel(num) {
+    var i = /1[3-8]+\d{9}/;
+    return i.test(num);
+  };
+  
+  var wechatPayBtn = $("#wechat-pay-now");
+  var waiting = $("<div class='waiting' style='background-color: #f64441 !important; border-color: #f64441 !important; height: 40px; font-size: 16px; padding-top: 8px; padding-left: 10px; padding-right: 10px;'>支付中...</div>");
+  
+  var bindOneEvent = function(){
+    $("#wechat-pay-now").one('click', toPay);
+  };
+  
+  var bindPayEvent = function(){
+    $(".defray-container").empty().append(wechatPayBtn);
+    $(".waiting").remove();
+    bindOneEvent();
+  };
+  
+  var toPay = function(){
+    for(var i = 0; i < $(".data-required").length; ++i){
+      var field = $($(".data-required")[i]), val = field.val();
+      if(val == undefined || val == null || val == ""){
+        uxuan.alert(field.data("detail") + "有误，请检查");
+        bindOneEvent();
+        return false;
+      }else{
+        data.auction_trade[field.prop("name")] = val;
+      };
+    };
+    
+    var mobile = $(".tel-field").val().trim();
+    if(!(11 == mobile.length && tel(mobile))){
+      uxuan.alert("请填写正确的手机号码");
+      bindOneEvent();
+      return;
+    };
+    
+    data.auction_trade.gift_remark = $(".remark").val() || $(".remark").data("value") || "";
+    data.auction_trade.giver_mobile = mobile;
+    
+    $(".defray-container").empty().append(waiting);
+    
+    $.ajax({
+      url: "/gift/trades.json",
+      dataType: 'JSON',
+      data: data,
+      type: 'POST',
+      success: function(result){
+        if(!result){
+          uxuan.alert("出错了");
+          bindPayEvent();
+          return;
+        };
+        if(result.trade){
+          var trade = result.trade;
+          // 提交订单成功，拉起支付
+          $.ajax({
+            url: ihaveu_domain + '/auction/trades/' + trade.id.toString() + '/checkout.json?trade[payment_service]=wechat_uxuan&trade[checkout_token]=' + trade.checkout_token,
+            dataType: 'JSON',
+            type: 'GET',
+            success: function(res){
+              if(res && res.appId){
+                  // 调起支付
+                  WeixinJSBridge.invoke('getBrandWCPayRequest', {
+                    'appId': res['appId'],
+                    'timeStamp': res['timeStamp'],
+                    'nonceStr': res['nonceStr'],
+                    'package': res['package'],
+                    'signType': res['signType'],
+                    'paySign': res['paySign']
+                  }, function(res){
+                    if(res.err_msg == "get_brand_wcpay_request:ok" ) {
+                      window.location.href = "/auction/trades/" + trade.id.toString() + "/wechat_query";
+                    }else{
+                      window.location.href = '/auction/trades/gift_show?trade_id=' + trade.id.toString();
+                    };
+                    //使用以上方式判断前端返回，微信团队郑重提示：res.err_msg将在用户支付成功后返回ok，
+                    //但并不保证它绝对可靠。
+                    //因此微信团队建议，当收到ok返回时，向商户后台询问是否收到交易成功的通知，若收到通知，
+                    //前端展示交易成功的界面；若此时未收到通知，商户后台主动
+                    //调用查询订单接口，查询订单的当前状态，并反馈给前端展示相应的界面。
+                  });
+              }else{
+                uxuan.alert('对不起，调起支付失败');
+                window.location.href = '/auction/trades/gift_show?trade_id=' + trade.id.toString();
+              };
+            },
+            error: function(err){
+              // window.location.href = ihaveu_domain + '/sessions.json'
+              uxuan.alert('您的网络质量有点差，请多试几次');
+              window.location.href = '/auction/trades/gift_show?trade_id=' + trade.id.toString();
+            }
+          });
+        }else if(result.error){
+          uxuan.alert(result.error);
+          bindPayEvent();
+        }else{
+          uxuan.alert("对不起，订单提交失败");
+          bindPayEvent();
+        };
+      },
+      error: function(msg){
+        uxuan.alert("对不起，请求下单接口失败");
+        console.log(msg);
+        bindPayEvent();
+      }
+    });
+  };
+  
+  bindOneEvent();

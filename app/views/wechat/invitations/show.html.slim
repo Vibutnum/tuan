@@ -1,0 +1,41 @@
+- content_for :head do
+  = stylesheet_link_tag 'wechat/invitations/index', media: 'all'
+  css:
+    html, body, .main-content, .wechat-page {
+      min-height: 100%;
+      background-color: #f64441;
+    }
+div.wechat-page
+  // 二维码
+  div.code-url.share-my-qrcode
+    div.code-url-title
+      / p 扫码凭借力 助我上总榜
+      p 人气王座 一决高下
+    div.code-url-show
+      img src="#{@current_account.invitation_code_url}"
+    div.code-url-share
+      p
+        a href="javascript: void(0);" 点击分享
+        span 我的专属二维码
+  // title
+  div.invitation-title
+    div
+      | 我的粉儿
+      / span 即将结束(3天后)
+  div.invitation
+    // 排行榜
+    div.invitation-items
+      - if @myfans.present?
+        - @myfans.each_with_index do |r, index|
+          div.invitation-item.invitation-item-me
+            div.name style="width: 20%;" = r["name"]
+            div.pic
+              img data-id="#{ r['open_id'] }" src="#{ r['pic'] }"
+            div.fans = r["time"].strftime('%Y-%m-%d %H:%M:%S')
+    - if @myfans.present?
+      div.paginate-container.fans-paginate
+        = will_paginate @myfans, renderer: BootstrapPagination::Rails, page_links: false, previous_label: "上一页", next_label: "下一页"
+    // 说明
+    = render 'note'
+div.shared-indicate
+  = image_tag 'share_it.png', class: 'arrow'

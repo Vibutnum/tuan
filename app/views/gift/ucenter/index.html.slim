@@ -1,0 +1,28 @@
+- content_for :head do
+  = stylesheet_link_tag 'ucenter', media: 'all'
+#ucenter-index
+  .header
+    .image-box
+      img src="#{ @current_user.account.try(:connection_uxuan).try(:pic) }" alt=""
+      .img-title 
+        - if @current_user
+          = @current_user.name
+        - else
+          | 游客
+
+  ul.list-group
+    a href="/gift/trades?q[is_gift_eq]=0" 
+      li.list-group-item style='border-bottom:none;' 犒劳自己
+    a href="/gift/trades?q[is_gift_eq]=1&q[gift_from_null]=1" 
+      li.list-group-item style='border-bottom:none;' 我送朋友
+    a href="/gift/trades?q[is_gift_eq]=1&q[gift_from_not_null]=1"
+      li.list-group-item style='border-bottom:none;' 朋友送我
+    a href="/gift/contacts"
+      li.list-group-item.icon-addresses style='border-bottom:none;' 我的地址
+    a href="/statics/post_sale.html"
+      li.list-group-item.icon-post-sale 售后服务
+
+javascript:
+  $("#ucenter-index .header .image-box img").on("error", function(){
+    $(this).replaceWith($("<div class='ucenter-hd-missing'></div>"));
+  });

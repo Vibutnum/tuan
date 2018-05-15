@@ -1,0 +1,118 @@
+- content_for :head do
+  css:
+    .group-step {
+      background-color: #FFF;
+      border-bottom: 1px solid #D5D5D5;
+      border-top: 1px solid #D5D5D5;
+      font-size: 12px;
+      padding: 15px 10px;
+      position: relative;
+      margin-top: 15px;
+    }
+    .group-step:after {
+      clear: both;
+      content: "";
+      display: block;
+      height: 0;
+      visibility: hidden;
+    }
+    .group-step-header {
+      height: 18px;
+      line-height: 18px;
+      margin-bottom: 12px;
+    }
+    .group-step-list:after {
+      clear: both;
+      content: "";
+      display: block;
+      height: 0;
+      visibility: hidden;
+    }
+    .group-step-item {
+      float: left;
+      position: relative;
+      width: 25%;
+      text-align: center;
+    }
+    .group-step-num {
+      display: inline-block;
+      background-clip: padding-box;
+      background-color: rgb(211, 211, 211);
+      border: 1px solid rgb(211, 211, 211);
+      border-radius: 20px;
+      color: #fff;
+      height: 20px;
+      line-height: 20px;
+      text-align: center;
+      width: 20px;
+    }
+    .group-step-detail {
+      padding-top: 5px;
+    }
+    .group-step-tit {
+      color: #666;
+      font-size: 10px;
+      line-height: 13px;
+    }
+    .group-step-more {
+      color: #333;
+      display: block;
+      height: 18px;
+      line-height: 18px;
+      position: absolute;
+      right: 10px;
+      text-align: right;
+      top: 15px;
+    }
+    .group-step-more:after {
+      background-image: url("#{ image_path 'bg_mark.png' }");
+      background-repeat: no-repeat;
+      background-size: 365px 490px;
+      background-position: -303px -102px;
+      content: "";
+      display: inline-block;
+      height: 12px;
+      margin-left: 5px;
+      vertical-align: -1px;
+      width: 6px;
+    }
+    .group-step-num-now {
+      background-color: #f64441;
+      border: 1px solid #f64441;
+    }
+    .group-step-tit-now {
+      color: #f64441;
+    }
+div.group-step
+  .group-step-header
+    | 拼团玩法
+    a.group-step-more href="/statics/group_rule.html" 查看详情
+  .group-step-list
+    .group-step-item
+      .group-step-num class="#{ 'group-step-num-now' if defined?(one) && one }" 1
+      .group-step-detail
+        p.group-step-tit class="#{ 'group-step-tit-now' if defined?(one) && one }"
+          | 选择
+          br
+          | 心仪商品
+    .group-step-item
+      .group-step-num class="#{ 'group-step-num-now' if defined?(two) && two }" 2
+      .group-step-detail
+        p.group-step-tit class="#{ 'group-step-tit-now' if defined?(two) && two }"
+          | 支付开团
+          br
+          | 或参团
+    .group-step-item
+      .group-step-num class="#{ 'group-step-num-now' if defined?(three) && three }" 3
+      .group-step-detail
+        p.group-step-tit class="#{ 'group-step-tit-now' if defined?(three) && three }"
+          | 等待好友
+          br
+          | 参团支付
+    .group-step-item
+      .group-step-num class="#{ 'group-step-num-now' if defined?(four) && four }" 4
+      .group-step-detail
+        p.group-step-tit class="#{ 'group-step-tit-now' if defined?(four) && four }"
+          | 达到人数
+          br
+          | 团购成功

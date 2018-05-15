@@ -1,0 +1,132 @@
+/*更换颜色*/
+$color_red: #f64441;  
+.icon-list {
+  border-bottom: 5px solid #EEE;
+}
+.icon-list ul {
+  padding: 10px 0 0 0;
+}
+.icon-list li {
+  float: left;
+  width: 25%;
+  text-align: center;
+  padding-bottom: 10px;
+}
+.icon-list li a {
+  display: block;
+  color: #666;
+}
+.icon-list li i {
+  display: block;
+  margin: 0 auto 5px auto;
+  width: 40px;
+  height: 40px;
+  border-radius: 45px;
+  -webkit-border-radius: 45px;
+  overflow: hidden;
+  background: #fff;
+  font-size: 0;
+}
+.icon-list li i img {
+  display: block;
+  width: 100%;
+}
+.icon-list ul:after {
+  content: "";
+  display: block;
+  clear: both;
+  height: 0;
+}
+.list-nav {
+  margin: 0 3%;
+  line-height: 40px;
+  height: 40px;
+  font-size: 15px;
+  font-weight: 600;
+  position: relative;
+  color: #343434;
+}
+.list-nav a {
+  display: block;
+  line-height: 40px;
+  height: 40px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #343434;
+}
+.list-nav a:before {
+  content: "更多";
+  display: block;
+  position: absolute;
+  right: 10px;
+  color: $color_red;
+  /*color: #29c1bc;*/
+  line-height: 40px;
+  height: 40px;
+  font-size: 13px;
+}
+.list-nav a:after {
+  content: "";
+  display: block;
+  position: absolute;
+  right: 2px;
+  top: 16px;
+  width: 8px;
+  height: 8px;
+  border-top: 2px solid $color_red;
+  border-right: 2px solid $color_red;
+/*  border-top: 2px solid #29c1bc;
+  border-right: 2px solid #29c1bc;*/
+  transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+}
+.list ul:after {content:""; clear:both; display:block; height:0; overflow:hidden}
+.list li {margin-left:3%; margin-bottom:3%; box-sizing:border-box; -webkit-box-sizing:border-box; width:45.5%; float:left; background:#FFF; position: relative;}
+.list li:nth-child(odd) {border-left:none}
+.list li:nth-child(even) {border-left:none; border-right:none}
+.list li:first-child,
+.list li:nth-child(2) {border-top:none}
+.list a {display:block; padding:6%; overflow:hidden; border:1px solid #ebebeb}
+.list a:after {content:''; clear:both; display:block; width:0; height:0; overflow:hidden}
+.list .img {display:block; width:100%; font-size:0; overflow:hidden}
+.list .img img {width:100%; height: 100%;}
+.list li:nth-child(2n-1) a{}
+.list li h2 {margin:5px 0 0 0; padding:0; font-weight:400; font-size: 14px; line-height: 1.4; height: 40px; overflow:hidden;}
+.list li p {font-size: 14px; padding:5px 0 5px 0; color:#da1c1c; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; position:relative}
+.list li p:after {
+  content:"订购"; 
+  display:inline-block; 
+  padding:3px 8px; 
+  font-size: 12px; 
+  color:#FFF; 
+  background:$color_red; 
+  /*background:#29c1bc; */
+  border-radius:3px; 
+  -webkit-border-radius:3px; 
+  position:absolute; 
+  right:0; 
+  top:50%; 
+  transform:translateY(-50%); 
+  -webkit-transform:translateY(-50%)
+}
+.list li p:first-letter {font-size: 12px}
+.list li p i {display:none; margin-left:5px; font-size: 12px; color:#999; text-decoration:line-through; font-style:normal}
+
+.list li.no-more p {
+  color: #ccc;
+}
+.list li.no-more p:after {
+  background: #ccc;
+}
+.list li.no-more:after {
+  content: "";
+  background: image-url('sale_out.png') no-repeat;
+  background-size: 54px 54px;
+  width: 54px;
+  height: 54px;
+  position: absolute;
+  display: block;
+  right: 20px;
+  bottom: 60px;
+  z-index: 999;
+}

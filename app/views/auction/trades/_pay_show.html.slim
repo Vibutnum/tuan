@@ -1,0 +1,152 @@
+- if @trade.is_gift
+  - unit = @trade.gift_children[0].units[0]
+  - url = "/gift/trades/#{ @trade.id }/get"
+  - parent_params = ["group=1", "token=#{ @trade.guest_token }"]
+  - @parent_url = "#{ url }?#{ parent_params.join("&") }"
+  - child_params = "group=0"
+  - child_params_arr = (@trade.valid_gift_children || []).to_a.map{ |child| "child_id=#{ child.id }&child_token=#{ child.guest_token }" }
+
+  - @child_urls = child_params_arr.map{ |c| "#{ url }?#{ child_params }&#{ c }" }
+  - @product = @trade.gift_children[0].units[0].item.product
+- else
+  - unit = @trade.units.first
+- product = unit.try(:item).try(:product)
+- contact = @trade.try(:unscoped_contact)
+
+ul.list-unstyled.trade-list
+  li.container.trade-list-item
+    .media data-href="/gift/products/#{ product.id }" style="#{ ((@trade.status == 'audit' && @trade.is_gift? && @trade.gift_from.nil?) || @trade.status == 'pay') ? '' : 'border-bottom: none;'}"
+      .media-heading
+        p style="margin-bottom: 10px;"
+          | 订单号：
+          span style="color: #f64441;" = "#{@trade.identifier}"
+      .media-left
+        img.media-object src="#{ image_domain }#{ product.try(:major_pic) }.m160.jpg" 
+      .media-body
+        p.media-heading 
+          = product.try(:name)
+          - if @trade.is_gift
+            .small.text-muted = "数量：#{ @trade.gift_count * @trade.gift_per_count }"
+          - else
+            .small.text-muted = "数量：#{ @trade.units.size }"
+          .small.text-muted = "税费：￥ #{ @trade.tax_price.to_i > 0 ? @trade.tax_price : '0（关税<=50免征）' }"
+          - if @trade.status != 'pay'
+            .small.text-muted  = "总价：￥ #{ number_with_delimiter @trade.payment_price }"
+    - if @trade.status == 'pay'
+      div.trade-list-item-bottom
+        span.text-muted 
+          | 总价：
+          span.text-red ￥
+          span.text-red = number_with_delimiter @trade.payment_price
+        .pay-link-container.pull-right style="position: relative; top: -1px;"
+          = link_to "去支付", 'javascript: void(0);', class: "btn btn-sm", id: "wechat-pay-now", style: "color: #fff; background-color: #f64441;"
+        = link_to "取消订单", cancel_auction_trade_path(@trade, from: "uxuan_gift"), method: :put, class: "pull-right margin-right-10"
+    - if @trade.status == 'audit' && @trade.is_gift? && @trade.gift_from.nil?
+      div.trade-list-item-bottom
+        = link_to "没有成功支付？再查一次", wechat_query_auction_trade_path(@trade), class: "btn btn-block", style: "color: #fff; background-color: #f64441;"
+  - if @trade.status == 'complete' && @trade.gift_count != @trade.gift_gotten && @trade.is_gift
+    li.trade-list-item
+      .nav-fixeds
+        a class="active group" href="javascript: void(0);" 发送至群
+        a class="not-group" href="javascript: void(0);" 赠送好友
+      .container
+        .media style="border-bottom: none; padding: 15px 0;"
+          .media-left
+            a href="javascript: void(0);"
+              img.media-object.small src="#{ image_domain }#{ product.try(:major_pic) }.m110.jpg" 
+          .media-body
+            p.media-heading 
+              = product.try(:name)
+          .media-right style="vertical-align: middle;"
+            a.btn.btn-default.send-to-group.trade-show-share-btn href="javascript: void(0);" style="font-size: 12px;" 发送至群
+            a.btn.btn-default.hidden.present-to-friends.trade-show-share-btn href="javascript: void(0);" style="font-size: 12px;" 赠送好友
+
+- if @trade.is_gift
+  div.bac-color style="margin-top: -15px;"
+    div.trade-list-item-bottom.show-bottom
+      div.text-muted style="width: 52px; float: left;" 赠言
+      div style="padding-left: 70px;"
+        p.text-right style="word-wrap: break-word;" = @trade.gift_remark
+      div style="clear: left;"
+    div.trade-list-item-bottom.show-bottom
+      - if @trade.status == 'complete'
+        div.text-muted style="width: 52px; float: left;" 领取状态
+        div style="padding-left: 70px;"
+          p.text-right style="word-wrap: break-word;"
+            span.active-color = @trade.gift_gotten
+            |  人领取 / 
+            span.text-red = @trade.gift_count - @trade.gift_gotten
+            |  人未领取
+        div style="clear: left;"
+      - else
+        div.text-right.text-muted style="width: 52px; float: left;" 订单状态
+        div style="padding-left: 70px;"
+          p.text-right style="word-wrap: break-word;" = @trade.gift_status_zh
+        div style="clear: left;"
+- else
+  div.show-addres style="margin-top: -15px;"
+    - if @trade.delivery_identifier
+      div.trade-list-item-bottom.show-bottom
+        div.text-muted style="width: 52px; float: left;" 物流公司
+        div style="padding-left: 70px;"
+          p.text-right style="word-wrap: break-word;" = @trade.delivery_service
+        div style="clear: left;"
+      div.trade-list-item-bottom.show-bottom
+        div.text-muted style="width: 52px; float: left;" 物流单号
+        div style="padding-left: 70px;"
+          p.text-right style="word-wrap: break-word;" = @trade.delivery_identifier
+        div style="clear: left;"
+    div.trade-list-item-bottom.show-bottom
+      div.text-right.text-muted style="width: 52px; float: left;" 订单状态
+      div style="padding-left: 70px;"
+        p.text-right style="word-wrap: break-word;" = @trade.gift_status_zh
+      div style="clear: left;"
+    div.trade-list-item-bottom.show-bottom
+      div.text-muted style="width: 52px; float: left;" 收货人
+      div style="padding-left: 70px;"
+        p.text-right style="word-wrap: break-word;" = contact.name
+      div style="clear: left;"
+    div.trade-list-item-bottom.show-bottom
+      div.text-muted style="width: 52px; float: left;" 联系电话
+      div style="padding-left: 70px;"
+        p.text-right style="word-wrap: break-word;" = contact.mobile
+      div style="clear: left;"
+    div.trade-list-item-bottom.show-bottom
+      div.text-muted style="width: 52px; float: left;" 收货地址
+      div style="padding-left: 70px;"
+        p.text-right = [contact.try(:province), contact.try(:city), contact.try(:town)].join(' ')
+        p.text-right = contact.try(:address)
+      div style="clear: left;"
+
+div.shared-indicate
+  = image_tag 'share_it.png', class: 'arrow'
+
+javascript:
+  $('.group').on('click', function(){
+    $('.group').addClass('active');
+    $('.not-group').removeClass('active');
+    $('.send-to-group').removeClass('hidden');
+    $('.present-to-friends').addClass('hidden');
+  })
+  $('.not-group').on('click', function(){
+    $('.not-group').addClass('active');
+    $('.group').removeClass('active');
+    $('.present-to-friends').removeClass('hidden');
+    $('.send-to-group').addClass('hidden');
+  })
+  $(".send-to-group").on("click", function(){
+    $(".shared-indicate").fadeIn();
+    $(".main-content").css({
+      overflow: "hidden",
+      height: $(window).height()
+    });
+  });
+  $(document).on("touchstart", ".shared-indicate", function(e){
+    $(".main-content").css({
+      overflow: "auto",
+      height: "auto"
+    });
+    $(this).fadeOut();
+    e.preventDefault();
+    return false;
+  });

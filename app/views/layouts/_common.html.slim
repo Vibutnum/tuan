@@ -1,0 +1,91 @@
+doctype html
+html
+  head
+    title = "全球U选"
+    meta http-equiv="Content-Type" content="text/html;charset=utf-8"
+    meta name="viewport" id="viewport" content="width=device-width,initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    script type="text/javascript" src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"
+    = stylesheet_link_tag    'application', media: 'all'
+    = javascript_include_tag 'application'
+    = csrf_meta_tags
+    = yield :head
+    javascript:
+      var ga = document.createElement('script');
+      ga.type = 'text/javascript'; ga.async = true;
+      ga.src = "#{ GA_CONFIG['js_domain'] }/javascripts/listen.js?1305510283";
+      var ga_after = document.getElementsByTagName('script')[0];
+      ga_after.parentNode.insertBefore(ga, ga_after);
+      var _gaq = _gaq || [];
+      var ga_account = '';
+      if(location.host == "#{ GA_CONFIG['listen_domain'] }"){
+        ga_account = 'UA-22178379-30';
+      }else{
+        ga_account = 'UA-22178379-31';
+      };
+      _gaq.push(['_setAccount', ga_account]);
+      _gaq.push(['_trackPageview']);
+  body
+    .main-content
+      div.backdrop
+        div.spinner
+          div.spinner-container.container1
+            div.circle1
+            div.circle2
+            div.circle3
+            div.circle4
+          div.spinner-container.container2
+            div.circle1
+            div.circle2
+            div.circle3
+            div.circle4
+          div.spinner-container.container3
+            div.circle1
+            div.circle2
+            div.circle3
+            div.circle4
+      - if defined? from
+        = render "shared/barrage", from: from
+      = yield
+    - if defined? from
+      - if from == "团购"
+        .nav-clearfix
+        .nav-bottom
+          nav
+            ul
+              li
+                a.nav-controller href="/g/coupons"
+                  div.nav-bottom-home
+                  | 首页
+              li
+                a.nav-controller href="/g/groups"
+                  div.nav-bottom-group
+                  | 我的团
+              li
+                a.nav-controller href="/auction/trades"
+                  div.nav-bottom-list
+                  | 我的订单
+              li
+                a.nav-controller href="/g/ucenter"
+                  div.nav-bottom-user
+                  | 个人中心
+      - elsif from == "送礼"
+        .nav-clearfix
+        .nav-bottom
+          nav
+            ul
+              li
+                a.nav-controller href="/gift/products"
+                  div.nav-bottom-home
+                  | 全部商品
+              li
+                a.nav-controller href="/gift/trades?q[is_gift_eq]=1&q[gift_from_null]=1"
+                  div.nav-bottom-list
+                  | 我的礼物
+              li
+                a.nav-controller href="/gift/ucenter"
+                  div.nav-bottom-user
+                  | 个人中心
+javascript:
+  $(function(){
+    $(".backdrop").hide();
+  });
